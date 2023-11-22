@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace UsersAPI.Model
 {
@@ -7,12 +8,15 @@ namespace UsersAPI.Model
 	{
 		[BsonId]
 		public ObjectId Id { get; set; }
-		[BsonElement("UserName")]
-		public string UserName { get; set; }
+		[Required]
+		[BsonElement("Username")]
+		public string UserName { get; set; } = string.Empty;
+		// To be changed. Should not be plain text
 		public string Password { get; set; }
+		[Required]
 		[BsonElement("Email")]
-		public string Email { get; set; }
-		[BsonElement("Chosen_Names")]
+		public string Email { get; set; } = string.Empty;
+		[BsonElement("ChosenNames")]
 		public List<Names> names { get; set; }
 
 		public User(ObjectId id, string userName, string password, string email, List<Names> names)

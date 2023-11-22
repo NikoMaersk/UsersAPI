@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace UsersAPI.Model
 {
@@ -7,8 +8,10 @@ namespace UsersAPI.Model
 	{
 		[BsonId]
 		public ObjectId Id { get; set; }
+		[Required]
 		[BsonElement("Name")]
 		public string Name { get; set; }
+		[Required]
 		[BsonElement("Password")]
 		public string Password { get; set; }
 

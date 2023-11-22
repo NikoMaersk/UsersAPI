@@ -38,21 +38,15 @@ namespace UsersAPI.Repository
 			return await _names.Find(n => true).ToListAsync();
 		}
 
-		public async Task<List<Names>> GetNamesSortedByName()
+		public async Task<List<Names>> GetNamesSorted(string sortField, string sortOrder)
 		{
-			var sort = Builders<Names>.Sort.Ascending(n => n.Name);
-			return await _names.Find(Builders<Names>.Filter.Empty).Sort(sort).ToListAsync();
+			var sortDefinition = GetSortDefinition(sortField, sortOrder);
+			return await _names.Find(Builders<Names>.Filter.Empty).Sort(sortDefinition).ToListAsync();
 		}
 
-		public async Task<List<Names>> GetNamesSortedByGender()
+		public async Task<Names> GetByName(string names)
 		{
-			var sort = Builders<Names>.Sort.Ascending(n => n.Gender);
-			return await _names.Find(Builders<Names>.Filter.Empty).Sort(sort).ToListAsync();
-		}
-
-		public async Task<Names> GetByNames(string names)
-		{
-			return await _names.Find(n => n.Name == names).FirstOrDefaultAsync();
+			return await _names.Find(n => string.Equals(n.Name, names, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
 		}
 
 		public async Task<List<Names>> GetByInternational(bool isInternational)
@@ -60,9 +54,23 @@ namespace UsersAPI.Repository
 			return await _names.Find(n => n.IsInternational == isInternational).ToListAsync();
 		}
 
-		public async Task<List<Names>> GetFilteredByName(string name)
+		public async Task<List<Names>> GetByGender(Gender gender)
 		{
-			throw new NotImplementedException();
+			return await _names.Find(n => n.Gender == gender).ToListAsync();
+		}
+
+		private SortDefinition<Names> GetSortDefinition(string sortField, string sortOrder)
+		{
+			var direction = sortOrder == "asc" ? 1 : -1;
+
+
+			return sortField?.ToLower() switch
+			{
+				"name" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.Name) : Builders<Names>.Sort.Descending(n => n.Name),
+				"gender" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.Gender) : Builders<Names>.Sort.Descending(n => n.Gender),
+				"international" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.IsInternational) : Builders<Names>.Sort.Descending(n => n.IsInternational),
+				_ => Builders<Names>.Sort.Ascending(n => n.Name)
+			};
 		}
 	}
 }

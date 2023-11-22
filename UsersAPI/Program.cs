@@ -2,6 +2,7 @@ using UsersAPI.Repository;
 using UsersAPI.Model;
 using MongoDB.Bson;
 using UsersAPI.Repository.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace UsersAPI
 {
@@ -72,40 +73,39 @@ namespace UsersAPI
 			});
 
 
-			app.MapGet("/names/id={id}", (ObjectId id, INamesRepository nr) =>
+			app.MapGet("/names/{id}", (ObjectId id, INamesRepository nr) =>
 			{
 				return nr.Get(id);
 			});
 
 
-			app.MapGet("/names", (INamesRepository nr) =>
+			app.MapGet("/names/by-name/{name}", (INamesRepository nr, string name) =>
 			{
-				return nr.GetAll();
+				return nr.GetByName(name);
 			});
 
 
-			app.MapGet("/names/name={name}", (INamesRepository nr, string name) =>
-			{
-				return nr.GetByNames(name);
-			});
-
-
-			app.MapGet("/names/international={isInternational}", (INamesRepository nr, bool isInternational) => 
+			app.MapGet("/names/international/{isInternational}", (INamesRepository nr, bool isInternational) => 
 			{
 				return nr.GetByInternational(isInternational);
 			});
 
-
-			app.MapGet("/names/sorted-by-name", (INamesRepository nr) =>
+			app.MapGet("/names", (INamesRepository nr, [FromQuery] string sort, [FromQuery] string order) =>
 			{
-				return nr.GetNamesSortedByName();
+				return nr.GetNamesSorted(sort, order);
 			});
 
 
-			app.MapGet("/names/sorted-by-gender", (INamesRepository nr) =>
+			app.MapGet("/names/gender/{gender}", (INamesRepository nr, Gender gender) =>
 			{
-				return nr.GetNamesSortedByGender();
+				return nr.GetByGender(gender);
 			});
+
+			app.MapGet("/names/all", (INamesRepository nr) =>
+			{
+				return nr.GetAll();
+			});
+
 
 			#endregion
 
@@ -135,7 +135,7 @@ namespace UsersAPI
 				return nm.GetAll();
 			});
 
-			app.MapGet("/matches/name={name}", (INamesMatch nm, string name) =>
+			app.MapGet("/matches/name/{name}", (INamesMatch nm, string name) =>
 			{
 				return nm.GetAllByName(name);
 			});
