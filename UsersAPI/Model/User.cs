@@ -6,24 +6,22 @@ namespace UsersAPI.Model
 	public class User
 	{
 		[BsonId]
-		public Guid Id { get; set; }
-
-		[BsonElement("UserId")]
-		[BsonRepresentation(BsonType.Int32)]
-		public int UserId { get; set; }
-
+		public ObjectId Id { get; set; }
 		[BsonElement("UserName")]
 		public string UserName { get; set; }
 		public string Password { get; set; }
+		[BsonElement("Email")]
 		public string Email { get; set; }
+		[BsonElement("Chosen_Names")]
+		public List<Names> names { get; set; }
 
-		public User(Guid id, int userId, string userName, string password, string email)
+		public User(ObjectId id, string userName, string password, string email, List<Names> names)
 		{
 			Id = id;
-			UserId = userId;
 			UserName = userName;
 			Password = password;
 			Email = email;
+			this.names = names;
 		}
 	}
 }

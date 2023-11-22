@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using UsersAPI.Model;
+using MongoDB.Bson;
+using UsersAPI.Repository.Interfaces;
 
 namespace UsersAPI.Repository
 {
-	public class NamesRepository : INamesRepository
+    public class NamesRepository : INamesRepository
 	{
 		private readonly IMongoCollection<Names> _names;
 
@@ -21,12 +23,12 @@ namespace UsersAPI.Repository
 			await _names.InsertOneAsync(name);
 		}
 
-		public async Task Delete(Guid id)
+		public async Task Delete(ObjectId id)
 		{
 			await _names.DeleteOneAsync(n => n.Id == id);
 		}
 
-		public async Task<Names> Get(Guid id)
+		public async Task<Names> Get(ObjectId id)
 		{
 			return await _names.Find(n => n.Id == id).FirstOrDefaultAsync();
 		}

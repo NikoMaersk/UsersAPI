@@ -1,23 +1,27 @@
 
 using UsersAPI.Repository;
 using UsersAPI.Model;
+using MongoDB.Bson;
+using UsersAPI.Repository.Interfaces;
 
 namespace UsersAPI
 {
-	public class Program
+    public class Program
 	{
 		public static void Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
-			builder.Services.AddAuthorization();
+			//builder.Services.AddAuthorization();
 
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 			builder.Services.AddSingleton<IUserRepository, UserRepository>();
 			builder.Services.AddSingleton<INamesRepository, NamesRepository>();
+			builder.Services.AddSingleton<IAdminRepository, AdminRepository>();
+			builder.Services.AddSingleton<INamesMatch, NamesMatchRepository>();
 			builder.Services.Configure<DBSettings>(builder.Configuration.GetSection(nameof(DBSettings)));
 
 			var app = builder.Build();
@@ -38,13 +42,13 @@ namespace UsersAPI
 
 			});
 
-			app.MapDelete("/users/{id}", (Guid id, IUserRepository ur) =>
+			app.MapDelete("/users/{id}", (ObjectId id, IUserRepository ur) =>
 			{
 				ur.Delete(id);
 			});
 
 
-			app.MapGet("/users/{id}", (Guid id, IUserRepository ur) =>
+			app.MapGet("/users/{id}", (ObjectId id, IUserRepository ur) =>
 			{
 				return ur.Get(id);
 			});
@@ -62,13 +66,13 @@ namespace UsersAPI
 
 			});
 
-			app.MapDelete("/names/{id}", (Guid id, INamesRepository nr) =>
+			app.MapDelete("/names/{id}", (ObjectId id, INamesRepository nr) =>
 			{
 				nr.Delete(id);
 			});
 
 
-			app.MapGet("/names/{id}", (Guid id, INamesRepository nr) =>
+			app.MapGet("/names/{id}", (ObjectId id, INamesRepository nr) =>
 			{
 				return nr.Get(id);
 			});
@@ -89,6 +93,33 @@ namespace UsersAPI
 			});
 			#endregion
 
+			#region Admin
+
+			app.MapPost("/admin", (IAdminRepository ar, Admin admin) =>
+			{
+				ar.Add(admin);
+			});
+
+			app.MapDelete("/admin/{id}", (ObjectId id, IAdminRepository ar) =>
+			{
+				ar.Delete(id);
+			});
+
+			app.MapGet("/admin/{id}", (ObjectId id, IAdminRepository ar) =>
+			{
+				return ar.Get(id);
+			});
+
+			#endregion
+
+			#region Match
+
+			app.MapGet("/matches", (INamesMatch nm) =>
+			{
+				return nm.GetAll();
+			});
+
+			#endregion
 
 			app.Run();
 		}

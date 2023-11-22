@@ -5,7 +5,7 @@ services:
     restart: always
     container_name: mongodb
     volumes: 
-      - mongohost_db:/data/db
+      - ./dbdata:/data/db
     ports:
     - 27017:27017
 
@@ -17,6 +17,3 @@ services:
      - 5000:5137
     depends_on:
       - mongohost
-
-volumes:
-  mongohost_db:

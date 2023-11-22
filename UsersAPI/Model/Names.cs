@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System.Text.Json.Serialization;
 
 namespace UsersAPI.Model
@@ -13,18 +14,24 @@ namespace UsersAPI.Model
 	public class Names
 	{
 		[BsonId]
-		public Guid Id { get; set; }
+		public ObjectId Id { get; set; }
 		[BsonElement("Name")]
 		public string Name { get; set; }
 		[BsonElement("Gender")]
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public Gender Gender { get; set; }
+		[BsonElement("International")]
+		public bool IsInternational { get; set; }
+		[BsonElement("Popularity")]
+		public int Popularity { get; set; }
+		[BsonElement("Occurrence")]
+		public int Occurrence {  get; set; }
 
-		public Names(Guid id, string name, Gender gender)
+		public Names(string name, Gender gender, bool isInternational)
 		{
-			Id = id;
 			Name = name;
 			Gender = gender;
+			IsInternational = isInternational;
 		}
 	}
 }

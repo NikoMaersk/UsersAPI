@@ -1,0 +1,6 @@
+exit
+db.Names.getIndexes()
+db.Admin.find()
+db.Names.find()
+use mongodb
+show dbs
