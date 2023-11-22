@@ -49,5 +49,20 @@ namespace UsersAPI.Repository
 			var sort = Builders<Names>.Sort.Ascending(n => n.Gender);
 			return await _names.Find(Builders<Names>.Filter.Empty).Sort(sort).ToListAsync();
 		}
+
+		public async Task<Names> GetByNames(string names)
+		{
+			return await _names.Find(n => n.Name == names).FirstOrDefaultAsync();
+		}
+
+		public async Task<List<Names>> GetByInternational(bool isInternational)
+		{
+			return await _names.Find(n => n.IsInternational == isInternational).ToListAsync();
+		}
+
+		public async Task<List<Names>> GetFilteredByName(string name)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

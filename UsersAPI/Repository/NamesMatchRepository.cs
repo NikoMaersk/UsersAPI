@@ -20,5 +20,10 @@ namespace UsersAPI.Repository
 		{
 			return await _matchCollection.Find(item => true).ToListAsync();
 		}
+
+		public async Task<List<Match>> GetAllByName(string name)
+		{
+			return await _matchCollection.Find(m => m.Name == name).ToListAsync();
+		}
 	}
 }

@@ -1,4 +1,3 @@
-
 using UsersAPI.Repository;
 using UsersAPI.Model;
 using MongoDB.Bson;
@@ -66,31 +65,48 @@ namespace UsersAPI
 
 			});
 
+
 			app.MapDelete("/names/{id}", (ObjectId id, INamesRepository nr) =>
 			{
 				nr.Delete(id);
 			});
 
 
-			app.MapGet("/names/{id}", (ObjectId id, INamesRepository nr) =>
+			app.MapGet("/names/id={id}", (ObjectId id, INamesRepository nr) =>
 			{
 				return nr.Get(id);
 			});
+
 
 			app.MapGet("/names", (INamesRepository nr) =>
 			{
 				return nr.GetAll();
 			});
 
+
+			app.MapGet("/names/name={name}", (INamesRepository nr, string name) =>
+			{
+				return nr.GetByNames(name);
+			});
+
+
+			app.MapGet("/names/international={isInternational}", (INamesRepository nr, bool isInternational) => 
+			{
+				return nr.GetByInternational(isInternational);
+			});
+
+
 			app.MapGet("/names/sorted-by-name", (INamesRepository nr) =>
 			{
 				return nr.GetNamesSortedByName();
 			});
 
+
 			app.MapGet("/names/sorted-by-gender", (INamesRepository nr) =>
 			{
 				return nr.GetNamesSortedByGender();
 			});
+
 			#endregion
 
 			#region Admin
@@ -117,6 +133,11 @@ namespace UsersAPI
 			app.MapGet("/matches", (INamesMatch nm) =>
 			{
 				return nm.GetAll();
+			});
+
+			app.MapGet("/matches/name={name}", (INamesMatch nm, string name) =>
+			{
+				return nm.GetAllByName(name);
 			});
 
 			#endregion
