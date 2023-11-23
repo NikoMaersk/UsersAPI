@@ -20,6 +20,9 @@ namespace UsersAPI.Model
 		[BsonElement("ChosenNames")]
 		public List<Names> Names { get; set; }
 
+		[BsonElement("Partner")]
+		public string Partner { get; set; }
+
 		[BsonElement("HashedPassword")]
 		public string HashedPassword { get; set; } = string.Empty;
 		[BsonElement("Salt")]

@@ -20,7 +20,7 @@ namespace UsersAPI.Repository
 
 		public async Task Add(RegistrationRequest request)
 		{
-			string hashedPassword = HashingUtil.HashPassword(request.Password, out string salt);
+			string hashedPassword = HashingHelper.HashPassword(request.Password, out string salt);
 
 			Admin admin = new()
 			{
@@ -39,7 +39,7 @@ namespace UsersAPI.Repository
 
 			if (userMatch == null || userMatch.HashedPassword == null || userMatch.Salt == null) { return false; }
 
-			return HashingUtil.Verify(pwd, userMatch.HashedPassword, userMatch.Salt);
+			return HashingHelper.Verify(pwd, userMatch.HashedPassword, userMatch.Salt);
 		}
 
 		public async Task Delete(ObjectId id)
