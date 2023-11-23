@@ -13,6 +13,5 @@ namespace UsersAPI.Repository.Interfaces
         Task<List<Names>> GetAll();
         Task Delete(ObjectId id);
         Task<List<Names>> GetNamesSorted(string sortField, string sortOrder);
-
 	}
 }

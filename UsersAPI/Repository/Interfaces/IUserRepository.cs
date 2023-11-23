@@ -9,5 +9,6 @@ namespace UsersAPI.Repository.Interfaces
         Task<User> Get(ObjectId id);
         Task<List<User>> GetAll();
         Task Delete(ObjectId id);
-    }
+        Task<ObjectId> GetIdFromEmail(string email);
+	}
 }

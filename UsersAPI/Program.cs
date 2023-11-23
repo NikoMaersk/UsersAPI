@@ -57,6 +57,12 @@ namespace UsersAPI
 			{
 				return ur.GetAll();
 			});
+
+			app.MapGet("/users/id-from-email/{email}", (string email, IUserRepository ur) =>
+			{
+				return ur.GetIdFromEmail(email);
+			});
+
 			#endregion
 
 			#region Names

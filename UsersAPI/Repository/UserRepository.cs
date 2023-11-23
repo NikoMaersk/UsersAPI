@@ -45,5 +45,12 @@ namespace UsersAPI.Repository
 		{
 			return await _users.Find(user => true).ToListAsync();
 		}
+
+		public async Task<ObjectId> GetIdFromEmail(string email)
+		{
+			User user = await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
+			
+			return user.Id;
+		}
 	}
 }
