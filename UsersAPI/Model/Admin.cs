@@ -10,16 +10,11 @@ namespace UsersAPI.Model
 		public ObjectId Id { get; set; }
 		[Required]
 		[BsonElement("Name")]
-		public string Name { get; set; }
+		public string Name { get; set; } = string.Empty;
 		[Required]
-		[BsonElement("Password")]
-		public string Password { get; set; }
-
-		public Admin(ObjectId id, string name, string password)
-		{
-			Id = id;
-			Name = name;
-			Password = password;
-		}
+		[BsonElement("HashedPassword")]
+		public string HashedPassword { get; set; } = string.Empty;
+		[BsonElement("Salt")]
+		public string Salt { get; set; } = string.Empty;
 	}
 }

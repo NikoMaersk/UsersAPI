@@ -3,32 +3,58 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using UsersAPI.Model;
 using UsersAPI.Repository.Interfaces;
+using UsersAPI.Util;
 
 namespace UsersAPI.Repository
 {
-    public class UserRepository : IUserRepository
+	public class UserRepository : IUserRepository
 	{
 		private readonly IMongoCollection<User> _users;
 
-        public UserRepository(IOptions<DBSettings> mongoDB)
-        {
+		public UserRepository(IOptions<DBSettings> mongoDB)
+		{
 			var mongoClient = new MongoClient(mongoDB.Value.ConnectionString);
 			var mongoDatabase = mongoClient.GetDatabase(mongoDB.Value.DatabaseName);
 			_users = mongoDatabase.GetCollection<User>(mongoDB.Value.UserCollectionName);
 
 
-			var indexKeysDefinitionUserId = Builders<User>.IndexKeys.Ascending(u => u.Id);
-			var indexModelUserId = new CreateIndexModel<User>(indexKeysDefinitionUserId);
-			_users.Indexes.CreateOne(indexModelUserId);
+			//var indexKeysDefinitionUserId = Builders<User>.IndexKeys.Ascending(u => u.Id);
+			//var indexModelUserId = new CreateIndexModel<User>(indexKeysDefinitionUserId);
+			//_users.Indexes.CreateOne(indexModelUserId);
 
-			var indexKeysDefinitionUserName = Builders<User>.IndexKeys.Ascending(u => u.UserName);
-			var indexModelUserName = new CreateIndexModel<User>(indexKeysDefinitionUserName);
-			_users.Indexes.CreateOne(indexModelUserName);
+			//var indexKeysDefinitionUserName = Builders<User>.IndexKeys.Ascending(u => u.UserName);
+			//var indexModelUserName = new CreateIndexModel<User>(indexKeysDefinitionUserName);
+			//_users.Indexes.CreateOne(indexModelUserName);
 		}
 
-        public async Task Add(User user)
+		public async Task Add(RegistrationRequest request)
+		{
+			string hashedPassword = HashingUtil.HashPassword(request.Password, out string salt);
+
+			User user = new User
+			{
+				UserName = request.Username,
+				Email = request.Email,
+				HashedPassword = hashedPassword,
+				Salt = salt,
+				Names = new List<Names>()
+			};
+
+			await _users.InsertOneAsync(user);
+		}
+
+		public async Task Add(User user)
 		{
 			await _users.InsertOneAsync(user);
+		}
+
+		public async Task<bool> Authenticate(string email, string pwd)
+		{
+			User userMatch = await _users.Find(u => u.Email == email).FirstAsync();
+
+			if (userMatch == null || userMatch.HashedPassword == null || userMatch.Salt == null) { return false; }
+
+			return HashingUtil.Verify(pwd, userMatch.HashedPassword, userMatch.Salt);
 		}
 
 		public async Task Delete(ObjectId id)

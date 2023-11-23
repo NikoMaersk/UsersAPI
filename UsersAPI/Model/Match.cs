@@ -12,11 +12,5 @@ namespace UsersAPI.Model
 		[BsonElement("Name")]
 		public string Name { get; set; }
 
-		public Match(ObjectId id, DateTime date, string name)
-		{
-			Id = id;
-			Date = date;
-			Name = name;
-		}
 	}
 }

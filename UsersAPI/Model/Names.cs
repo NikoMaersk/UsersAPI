@@ -30,15 +30,5 @@ namespace UsersAPI.Model
 		public int Popularity { get; set; }
 		[BsonElement("Occurrence")]
 		public int Occurrence {  get; set; }
-
-		public Names(ObjectId id, string name, Gender gender, bool isInternational, int popularity, int occurrence)
-		{
-			Id = id;
-			Name = name;
-			Gender = gender;
-			IsInternational = isInternational;
-			Popularity = popularity;
-			Occurrence = occurrence;
-		}
-	}
+    }
 }
