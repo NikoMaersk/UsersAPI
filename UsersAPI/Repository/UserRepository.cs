@@ -18,13 +18,13 @@ namespace UsersAPI.Repository
 			_users = mongoDatabase.GetCollection<User>(mongoDB.Value.UserCollectionName);
 
 
-			//var indexKeysDefinitionUserId = Builders<User>.IndexKeys.Ascending(u => u.Id);
-			//var indexModelUserId = new CreateIndexModel<User>(indexKeysDefinitionUserId);
-			//_users.Indexes.CreateOne(indexModelUserId);
+			var indexKeysDefinitionUserId = Builders<User>.IndexKeys.Ascending(u => u.Id);
+			var indexModelUserId = new CreateIndexModel<User>(indexKeysDefinitionUserId);
+			_users.Indexes.CreateOne(indexModelUserId);
 
-			//var indexKeysDefinitionUserName = Builders<User>.IndexKeys.Ascending(u => u.UserName);
-			//var indexModelUserName = new CreateIndexModel<User>(indexKeysDefinitionUserName);
-			//_users.Indexes.CreateOne(indexModelUserName);
+			var indexKeysDefinitionUserName = Builders<User>.IndexKeys.Ascending(u => u.UserName);
+			var indexModelUserName = new CreateIndexModel<User>(indexKeysDefinitionUserName);
+			_users.Indexes.CreateOne(indexModelUserName);
 		}
 
 		public async Task Add(RegistrationRequest request)
@@ -33,7 +33,7 @@ namespace UsersAPI.Repository
 
 			User user = new User
 			{
-				UserName = request.Username,
+				UserName = request.name,
 				Email = request.Email,
 				HashedPassword = hashedPassword,
 				Salt = salt,
@@ -43,10 +43,6 @@ namespace UsersAPI.Repository
 			await _users.InsertOneAsync(user);
 		}
 
-		public async Task Add(User user)
-		{
-			await _users.InsertOneAsync(user);
-		}
 
 		public async Task<bool> Authenticate(string email, string pwd)
 		{
@@ -56,6 +52,7 @@ namespace UsersAPI.Repository
 
 			return HashingUtil.Verify(pwd, userMatch.HashedPassword, userMatch.Salt);
 		}
+
 
 		public async Task Delete(ObjectId id)
 		{

@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using UsersAPI.Model;
-using MongoDB.Bson;
 using UsersAPI.Repository.Interfaces;
 
 namespace UsersAPI.Repository
 {
-    public class NamesRepository : INamesRepository
+	public class NamesRepository : INamesRepository
 	{
 		private readonly IMongoCollection<Names> _names;
 

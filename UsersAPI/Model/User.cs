@@ -10,7 +10,7 @@ namespace UsersAPI.Model
 		public ObjectId Id { get; set; }
 
 		[Required]
-		[BsonElement("Username")]
+		[BsonElement("name")]
 		public string UserName { get; set; } = string.Empty;
 
 		[Required]
@@ -27,7 +27,7 @@ namespace UsersAPI.Model
 
 		public User(RegistrationRequest registrationRequest)
 		{
-			UserName = registrationRequest.Username;
+			UserName = registrationRequest.name;
 			Email = registrationRequest.Email;
 		}
 

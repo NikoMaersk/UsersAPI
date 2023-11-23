@@ -41,7 +41,7 @@ namespace UsersAPI
 					pb.RequireAuthenticatedUser()
 					.AddAuthenticationSchemes(authScheme)
 					.AddRequirements()
-					.RequireClaim("user_type", "standard");
+					.RequireClaim("user_type", "admin");
 				});
 			});
 
@@ -69,8 +69,7 @@ namespace UsersAPI
 
 			#region Login
 
-
-			app.MapPost("/login", async (LoginRequest request, IUserRepository ur, HttpContext context) =>
+			app.MapPost("/login", async ([FromBody] LoginRequest request, IUserRepository ur, HttpContext context) =>
 			{
 				if (await ur.Authenticate(request.Email, request.Password))
 				{
@@ -83,6 +82,22 @@ namespace UsersAPI
 				}
 				return Results.Unauthorized();
 			}).AllowAnonymous();
+
+
+			app.MapPost("/login/admin", async ([FromBody] LoginRequest request, IAdminRepository ar, HttpContext context) =>
+			{
+				if (await ar.Authenticate(request.Email, request.Password))
+				{
+					List<Claim> claims = [new Claim("user_type", "admin")];
+					var identity = new ClaimsIdentity(claims, authScheme);
+					var userIdentity = new ClaimsPrincipal(identity);
+
+					await context.SignInAsync(authScheme, userIdentity);
+					return Results.Ok("Login success");
+				}
+				return Results.Unauthorized();
+			}).AllowAnonymous();
+
 
 			app.MapPost("/logout", async (IUserRepository ur, HttpContext context) =>
 			{
@@ -99,25 +114,27 @@ namespace UsersAPI
 			});
 
 
-			app.MapDelete("/users/{id}", (ObjectId id, IUserRepository ur) =>
+			app.MapDelete("/users/{id}", async (ObjectId id, IUserRepository ur) =>
 			{
-				ur.Delete(id);
+				await ur.Delete(id);
+			}).RequireAuthorization("admin");
+
+
+			app.MapGet("/users/{id}", async (ObjectId id, IUserRepository ur) =>
+			{
+				return await ur.Get(id);
 			}).RequireAuthorization();
 
 
-			app.MapGet("/users/{id}", (ObjectId id, IUserRepository ur) =>
+			app.MapGet("/users", async (IUserRepository ur) =>
 			{
-				return ur.Get(id);
+				return await ur.GetAll();
 			}).RequireAuthorization();
 
-			app.MapGet("/users", (IUserRepository ur) =>
-			{
-				return ur.GetAll();
-			}).RequireAuthorization();
 
-			app.MapGet("/users/id-from-Email/{Email}", (string email, IUserRepository ur) =>
+			app.MapGet("/users/id-from-Email/{Email}", async (string email, IUserRepository ur) =>
 			{
-				return ur.GetIdFromEmail(email);
+				return await ur.GetIdFromEmail(email);
 			}).RequireAuthorization();
 
 			#endregion
@@ -133,7 +150,7 @@ namespace UsersAPI
 			app.MapDelete("/names/{id}", (ObjectId id, INamesRepository nr) =>
 			{
 				nr.Delete(id);
-			}).RequireAuthorization();
+			}).RequireAuthorization("admin");
 
 
 			app.MapGet("/names/{id}", (ObjectId id, INamesRepository nr) =>
@@ -153,6 +170,7 @@ namespace UsersAPI
 				return nr.GetByInternational(isInternational);
 			}).RequireAuthorization();
 
+
 			app.MapGet("/names", (INamesRepository nr, [FromQuery] string sort, [FromQuery] string order) =>
 			{
 				return nr.GetNamesSorted(sort, order);
@@ -164,6 +182,7 @@ namespace UsersAPI
 				return nr.GetByGender(gender);
 			}).RequireAuthorization();
 
+
 			app.MapGet("/names/all", (INamesRepository nr) =>
 			{
 				return nr.GetAll();
@@ -174,33 +193,36 @@ namespace UsersAPI
 
 			#region Admin
 
-			app.MapPost("/admin", (IAdminRepository ar, Admin admin) =>
+			app.MapPost("/admin", async ([FromBody] RegistrationRequest request, IAdminRepository ar) =>
 			{
-				ar.Add(admin);
-			}).RequireAuthorization();
+				await ar.Add(request);
+			});
 
-			app.MapDelete("/admin/{id}", (ObjectId id, IAdminRepository ar) =>
-			{
-				ar.Delete(id);
-			}).RequireAuthorization();
 
-			app.MapGet("/admin/{id}", (ObjectId id, IAdminRepository ar) =>
+			app.MapDelete("/admin/{id}", async (ObjectId id, IAdminRepository ar) =>
 			{
-				return ar.Get(id);
-			}).RequireAuthorization();
+				await ar.Delete(id);
+			}).RequireAuthorization("admin");
+
+
+			app.MapGet("/admin/{id}", async (ObjectId id, IAdminRepository ar) =>
+			{
+				return await ar.Get(id);
+			}).RequireAuthorization("admin");
 
 			#endregion
 
 			#region Match
 
-			app.MapGet("/matches", (INamesMatch nm) =>
+			app.MapGet("/matches", async (INamesMatch nm) =>
 			{
-				return nm.GetAll();
+				return await nm.GetAll();
 			}).RequireAuthorization();
 
-			app.MapGet("/matches/name/{name}", (INamesMatch nm, string name) =>
+
+			app.MapGet("/matches/name/{name}", async (INamesMatch nm, string name) =>
 			{
-				return nm.GetAllByName(name);
+				return await nm.GetAllByName(name);
 			}).RequireAuthorization();
 
 			#endregion

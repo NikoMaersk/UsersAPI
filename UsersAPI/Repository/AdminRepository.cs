@@ -3,10 +3,11 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using UsersAPI.Model;
 using UsersAPI.Repository.Interfaces;
+using UsersAPI.Util;
 
 namespace UsersAPI.Repository
 {
-    public class AdminRepository : IAdminRepository
+	public class AdminRepository : IAdminRepository
 	{
 		private readonly IMongoCollection<Admin> _admins;
 
@@ -17,9 +18,28 @@ namespace UsersAPI.Repository
 			_admins = mongoDatabase.GetCollection<Admin>(mongoDB.Value.AdminCollectionName);
         }
 
-        public async Task Add(Admin admin)
+		public async Task Add(RegistrationRequest request)
 		{
+			string hashedPassword = HashingUtil.HashPassword(request.Password, out string salt);
+
+			Admin admin = new()
+			{
+				Name = request.name,
+				Email = request.Email,
+				HashedPassword = hashedPassword,
+				Salt = salt
+			};
+
 			await _admins.InsertOneAsync(admin);
+		}
+
+		public async Task<bool> Authenticate(string email, string pwd)
+		{
+			Admin userMatch = await _admins.Find(u => u.Email == email).FirstAsync();
+
+			if (userMatch == null || userMatch.HashedPassword == null || userMatch.Salt == null) { return false; }
+
+			return HashingUtil.Verify(pwd, userMatch.HashedPassword, userMatch.Salt);
 		}
 
 		public async Task Delete(ObjectId id)
