@@ -129,12 +129,12 @@ namespace UsersAPI
 			app.MapGet("/users", async (IUserRepository ur) =>
 			{
 				return await ur.GetAll();
-			}).RequireAuthorization();
+			}).RequireAuthorization("admin");
 
 
-			app.MapGet("/users/id-from-Email/{Email}", async (string email, IUserRepository ur) =>
+			app.MapGet("/users/email/{Email}", async (string email, IUserRepository ur) =>
 			{
-				return await ur.GetIdFromEmail(email);
+				return await ur.GetByEmail(email);
 			}).RequireAuthorization();
 
 			#endregion
