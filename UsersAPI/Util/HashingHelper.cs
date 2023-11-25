@@ -10,6 +10,7 @@ namespace UsersAPI.Util
 		private const int _memorySize = 65536;
 		private const int _parallelism = 1;
 
+
 		public static string HashPassword(string password, out string salt)
 		{
 			salt = GenerateSalt();
@@ -19,12 +20,14 @@ namespace UsersAPI.Util
 			return Hash(password, salt);
 		}
 
+
 		public static bool Verify(string pass, string compareTo, string salt)
 		{
 			string hash = Hash(pass, salt);
 
 			return ConstantTimeCompare(Encoding.UTF8.GetBytes(hash), Encoding.UTF8.GetBytes(compareTo));
 		}
+
 
 		private static string GenerateSalt()
 		{

@@ -2,6 +2,6 @@
 {
 	public interface IAuthorize
 	{
-		Task<bool> Authenticate(string email, string pass);
+		Task<bool> AuthenticateAsync(string email, string pass);
 	}
 }

@@ -1,14 +1,15 @@
-﻿using UsersAPI.Model;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
+using UsersAPI.Model;
 
 namespace UsersAPI.Repository.Interfaces
 {
-    public interface IUserRepository : IAuthorize
+	public interface IUserRepository : IAuthorize
     {
-        Task Add(RegistrationRequest request);
-        Task<User> Get(ObjectId id);
-        Task<List<User>> GetAll();
-        Task Delete(ObjectId id);
-        Task<User> GetByEmail(string email);
+        Task AddAsync(RegistrationRequest request);
+        Task<User> GetAsync(ObjectId id);
+        Task<List<User>> GetAllAsync();
+        Task DeleteAsync(ObjectId id);
+        Task<User> GetByEmailAsync(string email);
+        Task AddNameToUserAsync(string name, string email);
 	}
 }

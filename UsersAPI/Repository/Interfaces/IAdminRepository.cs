@@ -3,10 +3,10 @@ using UsersAPI.Model;
 
 namespace UsersAPI.Repository.Interfaces
 {
-    public interface IAdminRepository : IAuthorize
+	public interface IAdminRepository : IAuthorize
     {
-        Task Add(RegistrationRequest request);
-		Task Delete(ObjectId id);
-        Task<Admin> Get(ObjectId id);
+        Task AddAsync(RegistrationRequest request);
+		Task DeleteAsync(ObjectId id);
+        Task<Admin> GetAsync(ObjectId id);
     }
 }

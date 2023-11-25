@@ -15,9 +15,7 @@ namespace UsersAPI.Model
 	public class Names
 	{
 		[BsonId]
-		public ObjectId Id { get; set; }
-		[Required]
-		[BsonElement("Name")]
+		[BsonRepresentation(BsonType.String)]
 		public string Name { get; set; }
 		[Required]
 		[BsonElement("Gender")]

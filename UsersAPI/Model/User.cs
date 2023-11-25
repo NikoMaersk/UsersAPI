@@ -18,7 +18,7 @@ namespace UsersAPI.Model
 		public string Email { get; set; } = string.Empty;
 
 		[BsonElement("ChosenNames")]
-		public List<Names> Names { get; set; }
+		public List<string> Names { get; set; }
 
 		[BsonElement("Partner")]
 		public string Partner { get; set; }

@@ -1,21 +1,21 @@
-using UsersAPI.Repository;
-using UsersAPI.Model;
-using MongoDB.Bson;
-using UsersAPI.Repository.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using System.Security.Claims;
+using System.Text.Json;
+using UsersAPI.Model;
+using UsersAPI.Repository;
+using UsersAPI.Repository.Interfaces;
 
 namespace UsersAPI
 {
-    public class Program
+	public class Program
 	{
+		private const string authScheme = "token";
+
 		public static void Main(string[] args)
 		{
 			var builder = WebApplication.CreateBuilder(args);
-
-			// Add services to the container.
-			const string authScheme = "token";
 
 			builder.Services.AddAuthentication(authScheme).AddCookie(authScheme, Options =>
 			{
@@ -51,7 +51,7 @@ namespace UsersAPI
 			builder.Services.AddSingleton<IUserRepository, UserRepository>();
 			builder.Services.AddSingleton<INamesRepository, NamesRepository>();
 			builder.Services.AddSingleton<IAdminRepository, AdminRepository>();
-			builder.Services.AddSingleton<INamesMatch, NamesMatchRepository>();
+			builder.Services.AddSingleton<INamesMatchRepository, NamesMatchRepository>();
 			builder.Services.Configure<DBSettings>(builder.Configuration.GetSection(nameof(DBSettings)));
 
 			var app = builder.Build();
@@ -63,15 +63,24 @@ namespace UsersAPI
 				app.UseSwaggerUI();
 			}
 
+
 			app.UseHttpsRedirection();
 			app.UseAuthentication();
 			app.UseAuthorization();
 
+			ConfigureRoutes(app);
+
+			app.Run();
+		}
+
+
+		private static void ConfigureRoutes(WebApplication app)
+		{
 			#region Login
 
 			app.MapPost("/login", async ([FromBody] LoginRequest request, IUserRepository ur, HttpContext context) =>
 			{
-				if (await ur.Authenticate(request.Email, request.Password))
+				if (await ur.AuthenticateAsync(request.Email, request.Password))
 				{
 					List<Claim> claims = [new Claim("user_type", "standard")];
 					var identity = new ClaimsIdentity(claims, authScheme);
@@ -86,7 +95,7 @@ namespace UsersAPI
 
 			app.MapPost("/login/admin", async ([FromBody] LoginRequest request, IAdminRepository ar, HttpContext context) =>
 			{
-				if (await ar.Authenticate(request.Email, request.Password))
+				if (await ar.AuthenticateAsync(request.Email, request.Password))
 				{
 					List<Claim> claims = [new Claim("user_type", "admin")];
 					var identity = new ClaimsIdentity(claims, authScheme);
@@ -107,85 +116,102 @@ namespace UsersAPI
 			#endregion
 
 			#region Users
-			
+
 			app.MapPost("/users", async ([FromBody] RegistrationRequest request, IUserRepository ur) =>
 			{
-				await ur.Add(request);
+				await ur.AddAsync(request);
+				return Results.Created();
 			});
 
 
 			app.MapDelete("/users/{id}", async (ObjectId id, IUserRepository ur) =>
 			{
-				await ur.Delete(id);
+				await ur.DeleteAsync(id);
 			}).RequireAuthorization("admin");
 
 
 			app.MapGet("/users/{id}", async (ObjectId id, IUserRepository ur) =>
 			{
-				return await ur.Get(id);
+				return await ur.GetAsync(id);
 			}).RequireAuthorization();
 
 
 			app.MapGet("/users", async (IUserRepository ur) =>
 			{
-				return await ur.GetAll();
+				return await ur.GetAllAsync();
 			}).RequireAuthorization("admin");
 
 
-			app.MapGet("/users/email/{Email}", async (string email, IUserRepository ur) =>
+			app.MapGet("/users/email/{email}", async (string email, IUserRepository ur) =>
 			{
-				return await ur.GetByEmail(email);
+				return await ur.GetByEmailAsync(email);
 			}).RequireAuthorization();
+
+
+			app.MapPost("/users/{email}/names", async (string email, JsonElement body, IUserRepository ur, INamesRepository nr) =>
+			{
+				var name = body.GetProperty("name").ToString();
+
+				if (body.ValueKind == JsonValueKind.Undefined || name == null)
+				{
+					return Results.BadRequest("The 'name' property is missing in the request body.");
+				}
+
+				bool isValid = await nr.CheckIfNameIsValidAsync(name);
+
+				if (!isValid)
+				{
+					return Results.BadRequest("Invalid name");
+				}
+
+				await ur.AddNameToUserAsync(name, email);
+				return Results.Created($"/users/{email}/names", $"{name} added succesfully");
+			});
 
 			#endregion
 
 			#region Names
-			app.MapPost("/names", (INamesRepository nr, Names name) =>
+			app.MapPost("/names", async (INamesRepository nr, Names name) =>
 			{
-				nr.Add(name);
+				await nr.AddAsync(name);
+				return Results.Created($"/names/{name.Name}", name);
 
 			}).RequireAuthorization();
 
 
-			app.MapDelete("/names/{id}", (ObjectId id, INamesRepository nr) =>
+			app.MapDelete("/names/{name}", (string name, INamesRepository nr) =>
 			{
-				nr.Delete(id);
+				nr.DeleteAsync(name);
 			}).RequireAuthorization("admin");
 
 
-			app.MapGet("/names/{id}", (ObjectId id, INamesRepository nr) =>
+			app.MapGet("/names/{name}", (INamesRepository nr, string name) =>
 			{
-				return nr.Get(id);
+				return nr.GetByNameAsync(name);
 			}).RequireAuthorization();
 
 
-			app.MapGet("/names/by-name/{name}", (INamesRepository nr, string name) =>
+			app.MapGet("/names/international/{isInternational}", (INamesRepository nr, bool isInternational) =>
 			{
-				return nr.GetByName(name);
-			}).RequireAuthorization();
-
-
-			app.MapGet("/names/international/{isInternational}", (INamesRepository nr, bool isInternational) => 
-			{
-				return nr.GetByInternational(isInternational);
+				return nr.GetByInternationalAsync(isInternational);
 			}).RequireAuthorization();
 
 
 			app.MapGet("/names", (INamesRepository nr, [FromQuery] string sort, [FromQuery] string order) =>
 			{
-				return nr.GetNamesSorted(sort, order);
+				return nr.GetNamesSortedAsync(sort, order);
 			}).RequireAuthorization();
 
 
 			app.MapGet("/names/gender/{gender}", (INamesRepository nr, Gender gender) =>
 			{
-				return nr.GetByGender(gender);
+				return nr.GetByGenderAsync(gender);
 			}).RequireAuthorization();
 
 
 			app.MapGet("/names/all", (INamesRepository nr) =>
 			{
-				return nr.GetAll();
+				return nr.GetAllAsync();
 			}).RequireAuthorization();
 
 
@@ -195,39 +221,44 @@ namespace UsersAPI
 
 			app.MapPost("/admin", async ([FromBody] RegistrationRequest request, IAdminRepository ar) =>
 			{
-				await ar.Add(request);
+				await ar.AddAsync(request);
+				return Results.Created();
 			});
 
 
 			app.MapDelete("/admin/{id}", async (ObjectId id, IAdminRepository ar) =>
 			{
-				await ar.Delete(id);
+				await ar.DeleteAsync(id);
 			}).RequireAuthorization("admin");
 
 
 			app.MapGet("/admin/{id}", async (ObjectId id, IAdminRepository ar) =>
 			{
-				return await ar.Get(id);
+				return await ar.GetAsync(id);
 			}).RequireAuthorization("admin");
 
 			#endregion
 
 			#region Match
 
-			app.MapGet("/matches", async (INamesMatch nm) =>
+			app.MapPost("/matches/{match}", async ([FromBody] Match match, INamesMatchRepository nmr) =>
 			{
-				return await nm.GetAll();
+				await nmr.AddAsync(match);
+				return Results.Created($"/matches/{match.Id}", match);
+			});
+
+			app.MapGet("/matches", async (INamesMatchRepository nm) =>
+			{
+				return await nm.GetAllAsync();
 			}).RequireAuthorization();
 
 
-			app.MapGet("/matches/name/{name}", async (INamesMatch nm, string name) =>
+			app.MapGet("/matches/name/{name}", async (INamesMatchRepository nm, string name) =>
 			{
-				return await nm.GetAllByName(name);
+				return await nm.GetAllByNameAsync(name);
 			}).RequireAuthorization();
 
 			#endregion
-
-			app.Run();
 		}
 	}
 }

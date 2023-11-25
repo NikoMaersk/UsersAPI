@@ -18,7 +18,7 @@ namespace UsersAPI.Repository
 			_admins = mongoDatabase.GetCollection<Admin>(mongoDB.Value.AdminCollectionName);
         }
 
-		public async Task Add(RegistrationRequest request)
+		public async Task AddAsync(RegistrationRequest request)
 		{
 			string hashedPassword = HashingHelper.HashPassword(request.Password, out string salt);
 
@@ -33,7 +33,7 @@ namespace UsersAPI.Repository
 			await _admins.InsertOneAsync(admin);
 		}
 
-		public async Task<bool> Authenticate(string email, string pwd)
+		public async Task<bool> AuthenticateAsync(string email, string pwd)
 		{
 			Admin userMatch = await _admins.Find(u => u.Email == email).FirstAsync();
 
@@ -42,12 +42,12 @@ namespace UsersAPI.Repository
 			return HashingHelper.Verify(pwd, userMatch.HashedPassword, userMatch.Salt);
 		}
 
-		public async Task Delete(ObjectId id)
+		public async Task DeleteAsync(ObjectId id)
 		{
 			await _admins.DeleteOneAsync(a => a.Id == id);
 		}
 
-		public async Task<Admin> Get(ObjectId id)
+		public async Task<Admin> GetAsync(ObjectId id)
 		{
 			return await _admins.Find(a => a.Id == id).FirstOrDefaultAsync();
 		}

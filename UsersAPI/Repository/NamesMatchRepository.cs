@@ -5,7 +5,7 @@ using UsersAPI.Repository.Interfaces;
 
 namespace UsersAPI.Repository
 {
-	public class NamesMatchRepository : INamesMatch
+	public class NamesMatchRepository : INamesMatchRepository
 	{
 		private IMongoCollection<Match> _matchCollection;
 
@@ -16,14 +16,19 @@ namespace UsersAPI.Repository
             _matchCollection = mongoDatabase.GetCollection<Match>(mongoDB.Value.MatchesCollectionName);
         }
 
-		public async Task<List<Match>> GetAll()
+		public async Task<List<Match>> GetAllAsync()
 		{
 			return await _matchCollection.Find(item => true).ToListAsync();
 		}
 
-		public async Task<List<Match>> GetAllByName(string name)
+		public async Task<List<Match>> GetAllByNameAsync(string name)
 		{
 			return await _matchCollection.Find(m => m.Name == name).ToListAsync();
+		}
+
+		public async Task AddAsync(Match match)
+		{
+			await _matchCollection.InsertOneAsync(match);
 		}
 	}
 }

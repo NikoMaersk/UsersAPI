@@ -1,17 +1,17 @@
 ﻿using UsersAPI.Model;
-using MongoDB.Bson;
 
 namespace UsersAPI.Repository.Interfaces
 {
-    public interface INamesRepository
+	public interface INamesRepository
     {
-        Task Add(Names name);
-        Task<Names> Get(ObjectId id);
-        Task<Names> GetByName(string names);
-        Task<List<Names>> GetByInternational(bool isInternational);
-        Task<List<Names>> GetByGender(Gender gender);
-        Task<List<Names>> GetAll();
-        Task Delete(ObjectId id);
-        Task<List<Names>> GetNamesSorted(string sortField, string sortOrder);
+        Task AddAsync(Names name);
+        Task<Names> GetByNameAsync(string name);
+        Task<List<Names>> GetByInternationalAsync(bool isInternational);
+        Task<List<Names>> GetByGenderAsync(Gender gender);
+        Task<List<Names>> GetAllAsync();
+        Task DeleteAsync(string name);
+        Task<List<Names>> GetNamesSortedAsync(string sortField, string sortOrder);
+		Task<bool> CheckIfNameIsValidAsync(string name);
+
 	}
 }

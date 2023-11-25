@@ -27,7 +27,7 @@ namespace UsersAPI.Repository
 			_users.Indexes.CreateOne(indexModelUserName);
 		}
 
-		public async Task Add(RegistrationRequest request)
+		public async Task AddAsync(RegistrationRequest request)
 		{
 			string hashedPassword = HashingHelper.HashPassword(request.Password, out string salt);
 
@@ -37,14 +37,14 @@ namespace UsersAPI.Repository
 				Email = request.Email,
 				HashedPassword = hashedPassword,
 				Salt = salt,
-				Names = new List<Names>()
+				Names = new List<string>()
 			};
 
 			await _users.InsertOneAsync(user);
 		}
 
 
-		public async Task<bool> Authenticate(string email, string pwd)
+		public async Task<bool> AuthenticateAsync(string email, string pwd)
 		{
 			User userMatch = await _users.Find(u => u.Email == email).FirstAsync();
 
@@ -54,24 +54,32 @@ namespace UsersAPI.Repository
 		}
 
 
-		public async Task Delete(ObjectId id)
+		public async Task DeleteAsync(ObjectId id)
 		{
 			await _users.DeleteOneAsync(user => user.Id == id);
 		}
 
-		public async Task<User> Get(ObjectId id)
+		public async Task<User> GetAsync(ObjectId id)
 		{
 			return await _users.Find(user => user.Id == id).FirstOrDefaultAsync();
 		}
 
-		public async Task<List<User>> GetAll()
+		public async Task<List<User>> GetAllAsync()
 		{
 			return await _users.Find(user => true).ToListAsync();
 		}
 
-		public async Task<User> GetByEmail(string email)
+		public async Task<User> GetByEmailAsync(string email)
 		{	
 			return await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
+		}
+
+		public async Task AddNameToUserAsync(string name, string email)
+		{
+			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+			var update = Builders<User>.Update.Push(u => u.Names,  name);
+
+			var result = await _users.UpdateOneAsync(filter, update);
 		}
 	}
 }
