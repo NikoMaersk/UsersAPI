@@ -25,6 +25,10 @@ namespace UsersAPI.Repository
 			var indexKeysDefinitionUserName = Builders<User>.IndexKeys.Ascending(u => u.UserName);
 			var indexModelUserName = new CreateIndexModel<User>(indexKeysDefinitionUserName);
 			_users.Indexes.CreateOne(indexModelUserName);
+
+			var indexKeysDefinitionEmail = Builders<User>.IndexKeys.Ascending(u => u.Email);
+			var indexModelEmail = new CreateIndexModel<User>(indexKeysDefinitionEmail);
+			_users.Indexes.CreateOne(indexModelEmail);
 		}
 
 		public async Task AddAsync(RegistrationRequest request)
@@ -33,7 +37,7 @@ namespace UsersAPI.Repository
 
 			User user = new User
 			{
-				UserName = request.name,
+				UserName = request.Name,
 				Email = request.Email,
 				HashedPassword = hashedPassword,
 				Salt = salt,

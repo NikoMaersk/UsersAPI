@@ -5,7 +5,7 @@ namespace UsersAPI.Model
 	public class RegistrationRequest
 	{
 		[Required]
-		public string name { get; set; } = string.Empty;
+		public string Name { get; set; } = string.Empty;
 		[Required]
 		public string Email { get; set; } = string.Empty;
 		[Required]
@@ -15,9 +15,9 @@ namespace UsersAPI.Model
 
 		public RegistrationRequest(string name, string email, string password)
 		{
-			name = name;
-			Email = email;
-			Password = password;
+			this.Name = name;
+			this.Email = email;
+			this.Password = password;
 		}
 	}
 }

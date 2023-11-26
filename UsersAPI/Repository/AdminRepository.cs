@@ -24,7 +24,7 @@ namespace UsersAPI.Repository
 
 			Admin admin = new()
 			{
-				Name = request.name,
+				Name = request.Name,
 				Email = request.Email,
 				HashedPassword = hashedPassword,
 				Salt = salt

@@ -14,6 +14,10 @@ namespace UsersAPI.Repository
 			var mongoClient = new MongoClient(mongoDB.Value.ConnectionString);
 			var mongoDatabase = mongoClient.GetDatabase(mongoDB.Value.DatabaseName);
 			_names = mongoDatabase.GetCollection<Names>(mongoDB.Value.NamesCollectionName);
+
+			var indexKeysDefinitionName = Builders<Names>.IndexKeys.Ascending(n => n.Name);
+			var indexModelName = new CreateIndexModel<Names>(indexKeysDefinitionName);
+			_names.Indexes.CreateOne(indexModelName);
 		}
 
 
@@ -60,7 +64,7 @@ namespace UsersAPI.Repository
 
 			return sortField?.ToLower() switch
 			{
-				"name" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.Name) : Builders<Names>.Sort.Descending(n => n.Name),
+				"Name" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.Name) : Builders<Names>.Sort.Descending(n => n.Name),
 				"gender" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.Gender) : Builders<Names>.Sort.Descending(n => n.Gender),
 				"international" => direction == 1 ? Builders<Names>.Sort.Ascending(n => n.IsInternational) : Builders<Names>.Sort.Descending(n => n.IsInternational),
 				_ => Builders<Names>.Sort.Ascending(n => n.Name)

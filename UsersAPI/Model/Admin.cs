@@ -21,7 +21,7 @@ namespace UsersAPI.Model
 
 		public Admin(RegistrationRequest registrationRequest)
 		{
-			Name = registrationRequest.name;
+			Name = registrationRequest.Name;
 			Email = registrationRequest.Email;
 		}
 

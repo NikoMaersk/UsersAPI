@@ -150,18 +150,18 @@ namespace UsersAPI
 
 			app.MapPost("/users/{email}/names", async (string email, JsonElement body, IUserRepository ur, INamesRepository nr) =>
 			{
-				var name = body.GetProperty("name").ToString();
+				var name = body.GetProperty("Name").ToString();
 
 				if (body.ValueKind == JsonValueKind.Undefined || name == null)
 				{
-					return Results.BadRequest("The 'name' property is missing in the request body.");
+					return Results.BadRequest("The 'Name' property is missing in the request body.");
 				}
 
 				bool isValid = await nr.CheckIfNameIsValidAsync(name);
 
 				if (!isValid)
 				{
-					return Results.BadRequest("Invalid name");
+					return Results.BadRequest("Invalid Name");
 				}
 
 				await ur.AddNameToUserAsync(name, email);
@@ -179,13 +179,13 @@ namespace UsersAPI
 			}).RequireAuthorization();
 
 
-			app.MapDelete("/names/{name}", (string name, INamesRepository nr) =>
+			app.MapDelete("/names/{Name}", (string name, INamesRepository nr) =>
 			{
 				nr.DeleteAsync(name);
 			}).RequireAuthorization("admin");
 
 
-			app.MapGet("/names/{name}", (INamesRepository nr, string name) =>
+			app.MapGet("/names/{Name}", (INamesRepository nr, string name) =>
 			{
 				return nr.GetByNameAsync(name);
 			}).RequireAuthorization();
@@ -253,7 +253,7 @@ namespace UsersAPI
 			}).RequireAuthorization();
 
 
-			app.MapGet("/matches/name/{name}", async (INamesMatchRepository nm, string name) =>
+			app.MapGet("/matches/Name/{Name}", async (INamesMatchRepository nm, string name) =>
 			{
 				return await nm.GetAllByNameAsync(name);
 			}).RequireAuthorization();
