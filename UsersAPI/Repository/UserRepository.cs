@@ -86,12 +86,19 @@ namespace UsersAPI.Repository
 			var result = await _users.UpdateOneAsync(filter, update);
 		}
 
-		public async Task PatchPartnerLink(string name)
+		public async Task PatchPartnerLink(string email)
 		{
-			var filter = Builders<User>.Filter.Eq(u => u.UserName, name);
-			var update = Builders<User>.Update.Set(u => u.Partner, name);
+			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+			var update = Builders<User>.Update.Set(u => u.Partner, email);
 
 			await _users.UpdateOneAsync(filter, update);
+		}
+
+		public async Task<bool> CheckIfUserExists(string email)
+		{
+			return await _users
+				.Find(u => string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase))
+				.AnyAsync();
 		}
 	}
 }

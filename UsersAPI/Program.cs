@@ -161,7 +161,7 @@ namespace UsersAPI
 
 				if (!isValid)
 				{
-					return Results.BadRequest("Invalid Name");
+					return Results.BadRequest("Invalid name");
 				}
 
 				await ur.AddNameToUserAsync(name, email);
@@ -171,11 +171,18 @@ namespace UsersAPI
 
 			app.MapPatch("users/partner/{email}", async (string email, JsonElement body, IUserRepository ur) =>
 			{
-				var name = body.GetProperty("Name").ToString();
+				var name = body.GetProperty("Email").ToString();
 
 				if (body.ValueKind == JsonValueKind.Undefined || name == null)
 				{
 					return Results.BadRequest("The 'Name' property is missing in the request body.");
+				}
+
+				bool isValid = await ur.CheckIfUserExists(email);
+
+				if (!isValid)
+				{
+					return Results.BadRequest("Invalid email");
 				}
 
 				await ur.PatchPartnerLink(name);

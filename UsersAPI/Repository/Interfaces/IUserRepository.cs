@@ -12,5 +12,6 @@ namespace UsersAPI.Repository.Interfaces
         Task<User> GetByEmailAsync(string email);
         Task AddNameToUserAsync(string name, string email);
         Task PatchPartnerLink(string name);
+        Task<bool> CheckIfUserExists(string email);
 	}
 }
