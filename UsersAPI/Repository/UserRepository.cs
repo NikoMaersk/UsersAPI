@@ -86,10 +86,10 @@ namespace UsersAPI.Repository
 			var result = await _users.UpdateOneAsync(filter, update);
 		}
 
-		public async Task PatchPartnerLink(string email)
+		public async Task PatchPartnerLink(string email, string linkMail)
 		{
 			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
-			var update = Builders<User>.Update.Set(u => u.Partner, email);
+			var update = Builders<User>.Update.Set(u => u.Partner, linkMail);
 
 			await _users.UpdateOneAsync(filter, update);
 		}

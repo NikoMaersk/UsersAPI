@@ -11,7 +11,7 @@ namespace UsersAPI.Repository.Interfaces
         Task DeleteAsync(ObjectId id);
         Task<User> GetByEmailAsync(string email);
         Task AddNameToUserAsync(string name, string email);
-        Task PatchPartnerLink(string name);
+        Task PatchPartnerLink(string email, string linkEmail);
         Task<bool> CheckIfUserExists(string email);
 	}
 }

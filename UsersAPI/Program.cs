@@ -161,7 +161,7 @@ namespace UsersAPI
 
 				if (!isValid)
 				{
-					return Results.BadRequest("Invalid name");
+					return Results.BadRequest("Invalid linkedMail");
 				}
 
 				await ur.AddNameToUserAsync(name, email);
@@ -171,9 +171,10 @@ namespace UsersAPI
 
 			app.MapPatch("users/partner/{email}", async (string email, JsonElement body, IUserRepository ur) =>
 			{
-				var name = body.GetProperty("Email").ToString();
+				var linkedMail = body.GetProperty("Email").ToString();
+				
 
-				if (body.ValueKind == JsonValueKind.Undefined || name == null)
+				if (body.ValueKind == JsonValueKind.Undefined || linkedMail == null)
 				{
 					return Results.BadRequest("The 'Name' property is missing in the request body.");
 				}
@@ -185,7 +186,7 @@ namespace UsersAPI
 					return Results.BadRequest("Invalid email");
 				}
 
-				await ur.PatchPartnerLink(name);
+				await ur.PatchPartnerLink(email, linkedMail);
 				return Results.Ok("Success");
 			});
 
