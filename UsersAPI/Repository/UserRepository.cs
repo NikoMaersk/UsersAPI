@@ -85,5 +85,13 @@ namespace UsersAPI.Repository
 
 			var result = await _users.UpdateOneAsync(filter, update);
 		}
+
+		public async Task PatchPartnerLink(string name)
+		{
+			var filter = Builders<User>.Filter.Eq(u => u.UserName, name);
+			var update = Builders<User>.Update.Set(u => u.Partner, name);
+
+			await _users.UpdateOneAsync(filter, update);
+		}
 	}
 }

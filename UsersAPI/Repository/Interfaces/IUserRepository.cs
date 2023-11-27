@@ -11,5 +11,6 @@ namespace UsersAPI.Repository.Interfaces
         Task DeleteAsync(ObjectId id);
         Task<User> GetByEmailAsync(string email);
         Task AddNameToUserAsync(string name, string email);
+        Task PatchPartnerLink(string name);
 	}
 }

@@ -168,6 +168,20 @@ namespace UsersAPI
 				return Results.Created($"/users/{email}/names", $"{name} added succesfully");
 			});
 
+
+			app.MapPatch("users/partner/{email}", async (string email, JsonElement body, IUserRepository ur) =>
+			{
+				var name = body.GetProperty("Name").ToString();
+
+				if (body.ValueKind == JsonValueKind.Undefined || name == null)
+				{
+					return Results.BadRequest("The 'Name' property is missing in the request body.");
+				}
+
+				await ur.PatchPartnerLink(name);
+				return Results.Ok("Success");
+			});
+
 			#endregion
 
 			#region Names
