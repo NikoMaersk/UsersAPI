@@ -18,15 +18,15 @@ namespace UsersAPI.Model
 		[BsonRepresentation(BsonType.String)]
 		public string Name { get; set; }
 		[Required]
-		[BsonElement("Gender")]
+		[BsonElement("gender")]
 		[JsonConverter(typeof(JsonStringEnumConverter))]
 		public Gender Gender { get; set; }
 		[Required]
-		[BsonElement("International")]
+		[BsonElement("international")]
 		public bool IsInternational { get; set; }
-		[BsonElement("Popularity")]
+		[BsonElement("popularity")]
 		public int Popularity { get; set; }
-		[BsonElement("Occurrence")]
+		[BsonElement("occurrence")]
 		public int Occurrence {  get; set; }
     }
 }

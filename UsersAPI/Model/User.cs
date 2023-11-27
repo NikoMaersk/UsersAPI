@@ -10,22 +10,22 @@ namespace UsersAPI.Model
 		public ObjectId Id { get; set; }
 
 		[Required]
-		[BsonElement("Name")]
+		[BsonElement("name")]
 		public string UserName { get; set; } = string.Empty;
 
 		[Required]
-		[BsonElement("Email")]
+		[BsonElement("email")]
 		public string Email { get; set; } = string.Empty;
 
-		[BsonElement("ChosenNames")]
+		[BsonElement("chosenNames")]
 		public List<string> Names { get; set; }
 
-		[BsonElement("Partner")]
+		[BsonElement("partner")]
 		public string Partner { get; set; }
 
-		[BsonElement("HashedPassword")]
+		[BsonElement("hashedPassword")]
 		public string HashedPassword { get; set; } = string.Empty;
-		[BsonElement("Salt")]
+		[BsonElement("salt")]
 		public string Salt { get; set; } = string.Empty;
 
 		public User(RegistrationRequest registrationRequest)

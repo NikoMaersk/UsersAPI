@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using UsersAPI.Model;
 using UsersAPI.Repository;
 using UsersAPI.Repository.Interfaces;
@@ -73,6 +74,7 @@ namespace UsersAPI
 			app.Run();
 		}
 
+		
 
 		private static void ConfigureRoutes(WebApplication app)
 		{
@@ -119,6 +121,11 @@ namespace UsersAPI
 
 			app.MapPost("/users", async ([FromBody] RegistrationRequest request, IUserRepository ur) =>
 			{
+				if (!IsValidEmail(request.Email))
+				{
+					return Results.BadRequest("Must be a email");
+				}
+
 				await ur.AddAsync(request);
 				return Results.Created();
 			});
@@ -148,20 +155,26 @@ namespace UsersAPI
 			}).RequireAuthorization();
 
 
-			app.MapPost("/users/{email}/names", async (string email, JsonElement body, IUserRepository ur, INamesRepository nr) =>
+			app.MapPost("/users/names/{email}", async (string email, JsonElement body, IUserRepository ur, INamesRepository nr) =>
 			{
-				var name = body.GetProperty("Name").ToString();
+				var name = body.GetProperty("name").ToString();
 
 				if (body.ValueKind == JsonValueKind.Undefined || name == null)
 				{
-					return Results.BadRequest("The 'Name' property is missing in the request body.");
+					return Results.BadRequest("The 'name' property is missing in the request body.");
 				}
 
-				bool isValid = await nr.CheckIfNameIsValidAsync(name);
+				bool isValid = await nr.IsNameValidAsync(name);
+				bool isNameStored = await ur.isNameAlreadyStoredAsync(email, name);
 
 				if (!isValid)
 				{
-					return Results.BadRequest("Invalid linkedMail");
+					return Results.BadRequest($"{name} is not a registered name");
+				}
+
+				if (isNameStored)
+				{
+					return Results.BadRequest($"{name} already exists for {email}");
 				}
 
 				await ur.AddNameToUserAsync(name, email);
@@ -171,24 +184,58 @@ namespace UsersAPI
 
 			app.MapPatch("users/partner/{email}", async (string email, JsonElement body, IUserRepository ur) =>
 			{
-				var linkedMail = body.GetProperty("Email").ToString();
+				var linkedMail = body.GetProperty("email").ToString();
 				
 
 				if (body.ValueKind == JsonValueKind.Undefined || linkedMail == null)
 				{
-					return Results.BadRequest("The 'Name' property is missing in the request body.");
+					return Results.BadRequest("The 'email' property is missing in the request body.");
 				}
 
-				bool isValid = await ur.CheckIfUserExists(email);
+				bool isValid = await ur.CheckIfUserExistsAsync(email);
 
-				if (!isValid)
+				if (!isValid && IsValidEmail(email))
+				{
+					return Results.BadRequest("Invalid email");
+				}
+				else
+				{
+					await ur.PatchPartnerLinkAsync(email, linkedMail);
+					return Results.Ok("Success");
+				}
+			});
+
+
+			app.MapPatch("/users/names/clear/{email}", async (string email, IUserRepository ur) =>
+			{
+				if (!IsValidEmail(email))
 				{
 					return Results.BadRequest("Invalid email");
 				}
 
-				await ur.PatchPartnerLink(email, linkedMail);
-				return Results.Ok("Success");
+				bool modified = await ur.ClearNamesListAsync(email);
+
+				return modified ? Results.NoContent() : Results.NotFound("List could not be cleared");
 			});
+
+
+			app.MapPatch("/users/names/remove/{email}", async (string email, [FromBody] RemoveNamesRequest request, IUserRepository ur) =>
+			{
+				if (!IsValidEmail(email))
+				{
+					return Results.BadRequest("Invalid email");
+				}
+
+				if (request.Names == null)
+				{
+					return Results.BadRequest("Invalid or missing body");
+				}
+
+				bool modified = await ur.ClearNameFromListAsync(email, request.Names);
+
+				return modified ? Results.NoContent() : Results.NotFound("List could not be cleared");
+			});
+
 
 			#endregion
 
@@ -241,8 +288,14 @@ namespace UsersAPI
 
 			#region Admin
 
+
 			app.MapPost("/admin", async ([FromBody] RegistrationRequest request, IAdminRepository ar) =>
 			{
+				if (!IsValidEmail(request.Email))
+				{
+					return Results.BadRequest("Must be a email");
+				}
+
 				await ar.AddAsync(request);
 				return Results.Created();
 			});
@@ -263,7 +316,7 @@ namespace UsersAPI
 
 			#region Match
 
-			app.MapPost("/matches/{match}", async ([FromBody] Match match, INamesMatchRepository nmr) =>
+			app.MapPost("/matches/{match}", async ([FromBody] NameMatch match, INamesMatchRepository nmr) =>
 			{
 				await nmr.AddAsync(match);
 				return Results.Created($"/matches/{match.Id}", match);
@@ -281,6 +334,14 @@ namespace UsersAPI
 			}).RequireAuthorization();
 
 			#endregion
+		}
+
+
+		public static bool IsValidEmail(string email)
+		{
+			string pattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+			return Regex.IsMatch(email, pattern);
 		}
 	}
 }

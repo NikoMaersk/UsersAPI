@@ -9,14 +9,14 @@ namespace UsersAPI.Model
 		[BsonId]
 		public ObjectId Id { get; set; }
 		[Required]
-		[BsonElement("Name")]
+		[BsonElement("name")]
 		public string Name { get; set; }
 		[Required]
-		[BsonElement("Email")]
+		[BsonElement("email")]
 		public string Email { get; set; }
-		[BsonElement("HashedPassword")]
+		[BsonElement("hashedPassword")]
 		public string HashedPassword { get; set; } = string.Empty;
-		[BsonElement("Salt")]
+		[BsonElement("salt")]
 		public string Salt { get; set; } = string.Empty;
 
 		public Admin(RegistrationRequest registrationRequest)

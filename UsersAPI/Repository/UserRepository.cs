@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Xml.Linq;
 using UsersAPI.Model;
 using UsersAPI.Repository.Interfaces;
 using UsersAPI.Util;
@@ -51,7 +50,7 @@ namespace UsersAPI.Repository
 
 		public async Task<bool> AuthenticateAsync(string email, string pwd)
 		{
-			User userMatch = await _users.Find(u => u.Email == email).FirstAsync();
+			User userMatch = await _users.Find(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).FirstAsync();
 
 			if (userMatch == null || userMatch.HashedPassword == null || userMatch.Salt == null) { return false; }
 
@@ -76,18 +75,20 @@ namespace UsersAPI.Repository
 
 		public async Task<User> GetByEmailAsync(string email)
 		{	
-			return await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
+			return await _users.Find(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
 		}
 
 		public async Task AddNameToUserAsync(string name, string email)
 		{
+			string formattedName = char.ToUpper(name[0]) + name.Substring(1).ToLower();
+
 			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
-			var update = Builders<User>.Update.Push(u => u.Names,  name);
+			var update = Builders<User>.Update.Push(u => u.Names,  formattedName);
 
 			var result = await _users.UpdateOneAsync(filter, update);
 		}
 
-		public async Task PatchPartnerLink(string email, string linkMail)
+		public async Task PatchPartnerLinkAsync(string email, string linkMail)
 		{
 			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
 			var update = Builders<User>.Update.Set(u => u.Partner, linkMail);
@@ -95,25 +96,53 @@ namespace UsersAPI.Repository
 			await _users.UpdateOneAsync(filter, update);
 		}
 
-		public async Task<bool> CheckIfUserExists(string email)
+		public async Task<bool> CheckIfUserExistsAsync(string email)
 		{
 			return await _users
-				.Find(u => string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase))
+				.Find(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase))
 				.AnyAsync();
 		}
 
-		public async Task<bool> NameExists(string email, string name)
+		public async Task<bool> isNameAlreadyStoredAsync(string email, string name)
+		{
+			User user = await _users.Find(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
+
+            if (user != null)
+            {
+				return user.Names?.Any(n => n.Equals(name, StringComparison.OrdinalIgnoreCase)) ?? false;
+			}
+
+			return false;
+		}
+
+		public async Task<bool> ClearNamesListAsync(string email)
+		{
+			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+			var update = Builders<User>.Update.Set(u => u.Names, new List<string>());
+
+			var updateResult = await _users.UpdateOneAsync(filter, update);
+
+			return updateResult?.ModifiedCount > 0;
+		}
+
+		public async Task<bool> ClearNameFromListAsync(string email, List<string> namesToRemove)
 		{
 			User user = await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
 
-            if (user == null)
-            {
-				List<string> strings = user.Names;
+			if (user == null)
+			{
+				return false;
+			}
 
-				return strings.Find(s => s.Equals(name, StringComparison.OrdinalIgnoreCase)).Any();
-            }
+			var lowerCaseNames = namesToRemove.Select(n => n.ToLowerInvariant()).ToList();
+			var updatedNames = user.Names.Where(name => !lowerCaseNames.Contains(name.ToLowerInvariant())).ToList();
 
-			return false;
+			var filter = Builders<User>.Filter.Eq(u => u.Email, user.Email);
+			var update = Builders<User>.Update.Set(u => u.Names, updatedNames);
+
+			var updateResult = await _users.UpdateOneAsync(filter, update);
+
+			return updateResult?.ModifiedCount > 0;
 		}
 	}
 }

@@ -4,8 +4,8 @@ namespace UsersAPI.Repository.Interfaces
 {
 	public interface INamesMatchRepository
     {
-        Task<List<Match>> GetAllAsync();
-        Task<List<Match>> GetAllByNameAsync(string name);
-        Task AddAsync(Match match);
+        Task<List<NameMatch>> GetAllAsync();
+        Task<List<NameMatch>> GetAllByNameAsync(string name);
+        Task AddAsync(NameMatch match);
     }
 }

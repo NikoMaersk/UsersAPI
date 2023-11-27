@@ -11,7 +11,7 @@ namespace UsersAPI.Repository.Interfaces
         Task<List<Names>> GetAllAsync();
         Task DeleteAsync(string name);
         Task<List<Names>> GetNamesSortedAsync(string sortField, string sortOrder);
-		Task<bool> CheckIfNameIsValidAsync(string name);
+		Task<bool> IsNameValidAsync(string name);
 
 	}
 }

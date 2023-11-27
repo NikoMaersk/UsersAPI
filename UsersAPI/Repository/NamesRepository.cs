@@ -23,7 +23,18 @@ namespace UsersAPI.Repository
 
         public async Task AddAsync(Names name)
 		{
-			await _names.InsertOneAsync(name);
+			string formattedName = char.ToUpper(name.Name[0]) + name.Name.Substring(1).ToLower();
+
+			Names formattedNameObject = new Names
+			{
+				Name = formattedName,
+				Gender = name.Gender,
+				IsInternational = name.IsInternational,
+				Popularity = name.Popularity,
+				Occurrence = name.Occurrence
+			};
+
+			await _names.InsertOneAsync(formattedNameObject);
 		}
 
 		public async Task DeleteAsync(string name)
@@ -71,7 +82,7 @@ namespace UsersAPI.Repository
 			};
 		}
 
-		public async Task<bool> CheckIfNameIsValidAsync(string name)
+		public async Task<bool> IsNameValidAsync(string name)
 		{
 			return await _names
 				.Find(n => string.Equals(n.Name, name, StringComparison.OrdinalIgnoreCase))

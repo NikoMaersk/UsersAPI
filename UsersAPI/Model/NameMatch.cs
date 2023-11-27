@@ -3,13 +3,13 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace UsersAPI.Model
 {
-	public class Match
+	public class NameMatch
 	{
 		[BsonId]
 		public ObjectId Id { get; set; }
-		[BsonElement("Date")]
+		[BsonElement("date")]
 		public DateTime Date { get; set; }
-		[BsonElement("Name")]
+		[BsonElement("name")]
 		public string Name { get; set; }
 
 	}
