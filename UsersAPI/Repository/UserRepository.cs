@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Xml.Linq;
 using UsersAPI.Model;
 using UsersAPI.Repository.Interfaces;
 using UsersAPI.Util;
@@ -99,6 +100,20 @@ namespace UsersAPI.Repository
 			return await _users
 				.Find(u => string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase))
 				.AnyAsync();
+		}
+
+		public async Task<bool> NameExists(string email, string name)
+		{
+			User user = await _users.Find(u => u.Email == email).FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+				List<string> strings = user.Names;
+
+				return strings.Find(s => s.Equals(name, StringComparison.OrdinalIgnoreCase)).Any();
+            }
+
+			return false;
 		}
 	}
 }
