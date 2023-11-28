@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System.Security.Claims;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 using UsersAPI.Model;
 using UsersAPI.Repository;
 using UsersAPI.Repository.Interfaces;
+using UsersAPI.Util;
 
 namespace UsersAPI
 {
@@ -121,7 +121,7 @@ namespace UsersAPI
 
 			app.MapPost("/users", async ([FromBody] RegistrationRequest request, IUserRepository ur) =>
 			{
-				if (!IsValidEmail(request.Email))
+				if (!EmailHelper.IsValidEmail(request.Email))
 				{
 					return Results.BadRequest("Must be a email");
 				}
@@ -194,7 +194,7 @@ namespace UsersAPI
 
 				bool isValid = await ur.CheckIfUserExistsAsync(email);
 
-				if (!isValid && IsValidEmail(email))
+				if (!isValid && EmailHelper.IsValidEmail(email))
 				{
 					return Results.BadRequest("Invalid email");
 				}
@@ -208,7 +208,7 @@ namespace UsersAPI
 
 			app.MapPatch("/users/names/clear/{email}", async (string email, IUserRepository ur) =>
 			{
-				if (!IsValidEmail(email))
+				if (!EmailHelper.IsValidEmail(email))
 				{
 					return Results.BadRequest("Invalid email");
 				}
@@ -221,7 +221,7 @@ namespace UsersAPI
 
 			app.MapPatch("/users/names/remove/{email}", async (string email, [FromBody] RemoveNamesRequest request, IUserRepository ur) =>
 			{
-				if (!IsValidEmail(email))
+				if (!EmailHelper.IsValidEmail(email))
 				{
 					return Results.BadRequest("Invalid email");
 				}
@@ -291,7 +291,7 @@ namespace UsersAPI
 
 			app.MapPost("/admin", async ([FromBody] RegistrationRequest request, IAdminRepository ar) =>
 			{
-				if (!IsValidEmail(request.Email))
+				if (!EmailHelper.IsValidEmail(request.Email))
 				{
 					return Results.BadRequest("Must be a email");
 				}
@@ -334,14 +334,6 @@ namespace UsersAPI
 			}).RequireAuthorization();
 
 			#endregion
-		}
-
-
-		public static bool IsValidEmail(string email)
-		{
-			string pattern = @"^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-
-			return Regex.IsMatch(email, pattern);
-		}
+		}	
 	}
 }
