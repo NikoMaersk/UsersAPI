@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Xml.Linq;
 using UsersAPI.Model;
 using UsersAPI.Repository;
 using UsersAPI.Repository.Interfaces;
@@ -192,18 +193,23 @@ namespace UsersAPI
 					return Results.BadRequest("The 'email' property is missing in the request body.");
 				}
 
-				bool isValid = await ur.CheckIfUserExistsAsync(email);
 
-				if (!isValid && EmailHelper.IsValidEmail(email))
+				if (!EmailHelper.IsValidEmail(linkedMail) || !EmailHelper.IsValidEmail(email))
 				{
 					return Results.BadRequest("Invalid email");
 				}
-				else
+
+				bool isValid = await ur.CheckIfUserExistsAsync(linkedMail) && await ur.CheckIfUserExistsAsync(email);
+
+				if (!isValid)
 				{
-					await ur.PatchPartnerLinkAsync(email, linkedMail);
-					return Results.Ok("Success");
+					return Results.BadRequest($"Not a registered user");
 				}
-			});
+
+				await ur.PatchPartnerLinkAsync(email, linkedMail);
+				return Results.Ok("Success");
+
+			}).RequireAuthorization();
 
 
 			app.MapPatch("/users/names/clear/{email}", async (string email, IUserRepository ur) =>
