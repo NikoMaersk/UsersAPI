@@ -166,7 +166,7 @@ namespace UsersAPI
 				}
 
 				bool isValid = await nr.IsNameValidAsync(name);
-				bool isNameStored = await ur.isNameAlreadyStoredAsync(email, name);
+				bool isNameStored = await ur.IsNameStoredAsync(email, name);
 
 				if (!isValid)
 				{
@@ -322,24 +322,36 @@ namespace UsersAPI
 
 			#region Match
 
-			app.MapPost("/matches", async ([FromBody] NameMatch match, INamesMatchRepository nmr) =>
+			app.MapPost("/matches", async ([FromBody] NameMatch match, INamesMatchRepository nmr, INamesRepository nr) =>
 			{
+				if (match == null || string.IsNullOrEmpty(match.Name))
+				{
+					return Results.BadRequest("Invalid match data.");
+				}
+
+				if (!await nr.IsNameValidAsync(match.Name))
+				{
+					return Results.BadRequest($"{match.Name} is not a registered name");
+				}
+
 				await nmr.AddAsync(match);
 				return Results.Created($"/matches/{match.Id}", match);
 			});
 
 			app.MapGet("/matches", async (INamesMatchRepository nm) =>
 			{
-				return await nm.GetAllAsync();
+				var matches = await nm.GetAllAsync();
+				return Results.Ok(matches);
 			}).RequireAuthorization();
-
 
 			app.MapGet("/matches/{Name}", async (INamesMatchRepository nm, string name) =>
 			{
-				return await nm.GetAllByNameAsync(name);
+				var matches = await nm.GetAllByNameAsync(name);
+				return Results.Ok(matches);
 			}).RequireAuthorization();
 
+
 			#endregion
-		}	
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using System.Xml.Linq;
 using UsersAPI.Model;
 using UsersAPI.Repository.Interfaces;
 
@@ -14,7 +15,7 @@ namespace UsersAPI.Repository
             var client = new MongoClient(mongoDB.Value.ConnectionString);
             var mongoDatabase = client.GetDatabase(mongoDB.Value.DatabaseName);
             _matchCollection = mongoDatabase.GetCollection<NameMatch>(mongoDB.Value.MatchesCollectionName);
-        }
+		}
 
 		public async Task<List<NameMatch>> GetAllAsync()
 		{
@@ -28,7 +29,15 @@ namespace UsersAPI.Repository
 
 		public async Task AddAsync(NameMatch match)
 		{
-			await _matchCollection.InsertOneAsync(match);
+			string formattedName = char.ToUpper(match.Name[0]) + match.Name.Substring(1).ToLower();
+
+			var formattedMatch = new NameMatch
+			{
+				Date = match.Date,
+				Name = formattedName,
+			};
+
+			await _matchCollection.InsertOneAsync(formattedMatch);
 		}
 	}
 }

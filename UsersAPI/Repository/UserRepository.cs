@@ -103,7 +103,7 @@ namespace UsersAPI.Repository
 				.AnyAsync();
 		}
 
-		public async Task<bool> isNameAlreadyStoredAsync(string email, string name)
+		public async Task<bool> IsNameStoredAsync(string email, string name)
 		{
 			User user = await _users.Find(u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase)).FirstOrDefaultAsync();
 

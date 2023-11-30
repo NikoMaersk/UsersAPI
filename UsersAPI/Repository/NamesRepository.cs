@@ -42,7 +42,7 @@ namespace UsersAPI.Repository
 			await _names.DeleteOneAsync(n => string.Equals(n.Name, name, StringComparison.OrdinalIgnoreCase));
 		}
 
-		async Task<List<Names>> INamesRepository.GetAllAsync()
+		public async Task<List<Names>> GetAllAsync()
 		{
 			return await _names.Find(n => true).ToListAsync();
 		}

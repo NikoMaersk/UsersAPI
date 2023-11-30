@@ -7,6 +7,7 @@ namespace UsersAPI.Model
 	{
 		[BsonId]
 		public ObjectId Id { get; set; }
+		[BsonDateTimeOptions(Kind = DateTimeKind.Utc)]
 		[BsonElement("date")]
 		public DateTime Date { get; set; }
 		[BsonElement("name")]
