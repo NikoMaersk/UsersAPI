@@ -322,7 +322,7 @@ namespace UsersAPI
 
 			#region Match
 
-			app.MapPost("/matches/{match}", async ([FromBody] NameMatch match, INamesMatchRepository nmr) =>
+			app.MapPost("/matches", async ([FromBody] NameMatch match, INamesMatchRepository nmr) =>
 			{
 				await nmr.AddAsync(match);
 				return Results.Created($"/matches/{match.Id}", match);
