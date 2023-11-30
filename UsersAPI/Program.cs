@@ -334,7 +334,7 @@ namespace UsersAPI
 			}).RequireAuthorization();
 
 
-			app.MapGet("/matches/Name/{Name}", async (INamesMatchRepository nm, string name) =>
+			app.MapGet("/matches/{Name}", async (INamesMatchRepository nm, string name) =>
 			{
 				return await nm.GetAllByNameAsync(name);
 			}).RequireAuthorization();
