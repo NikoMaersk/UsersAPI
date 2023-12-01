@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Xml.Linq;
 using UsersAPI.Model;
@@ -38,6 +39,16 @@ namespace UsersAPI.Repository
 			};
 
 			await _matchCollection.InsertOneAsync(formattedMatch);
+		}
+
+		public async Task<NameMatch> GetAsync(ObjectId id)
+		{
+			return await _matchCollection.Find(m => m.Id == id).FirstOrDefaultAsync();
+		}
+
+		public async Task DeleteAsync(ObjectId id)
+		{
+			await _matchCollection.DeleteOneAsync(m =>  m.Id == id);
 		}
 	}
 }

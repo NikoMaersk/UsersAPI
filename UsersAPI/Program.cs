@@ -338,17 +338,31 @@ namespace UsersAPI
 				return Results.Created($"/matches/{match.Id}", match);
 			});
 
-			app.MapGet("/matches", async (INamesMatchRepository nm) =>
+
+			app.MapGet("/matches", async (INamesMatchRepository nmr) =>
 			{
-				var matches = await nm.GetAllAsync();
+				var matches = await nmr.GetAllAsync();
 				return Results.Ok(matches);
 			}).RequireAuthorization();
 
-			app.MapGet("/matches/{Name}", async (INamesMatchRepository nm, string name) =>
+
+			app.MapGet("/matches/{Name}", async (INamesMatchRepository nmr, string name) =>
 			{
-				var matches = await nm.GetAllByNameAsync(name);
+				var matches = await nmr.GetAllByNameAsync(name);
 				return Results.Ok(matches);
 			}).RequireAuthorization();
+
+
+			app.MapDelete("/matches/{id}", async (ObjectId id, INamesMatchRepository nmr) =>
+			{
+				await nmr.DeleteAsync(id);
+			}).RequireAuthorization("admin");
+
+
+			app.MapGet("/matches/id/{id}", async (ObjectId id, INamesMatchRepository nmr) =>
+			{
+				return await nmr.GetAsync(id);
+			}).RequireAuthorization("admin");
 
 
 			#endregion

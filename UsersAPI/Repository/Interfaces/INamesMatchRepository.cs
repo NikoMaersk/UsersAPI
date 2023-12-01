@@ -1,4 +1,5 @@
-﻿using UsersAPI.Model;
+﻿using MongoDB.Bson;
+using UsersAPI.Model;
 
 namespace UsersAPI.Repository.Interfaces
 {
@@ -6,6 +7,8 @@ namespace UsersAPI.Repository.Interfaces
     {
         Task<List<NameMatch>> GetAllAsync();
         Task<List<NameMatch>> GetAllByNameAsync(string name);
+        Task<NameMatch> GetAsync(ObjectId id);
         Task AddAsync(NameMatch match);
-    }
+		Task DeleteAsync(ObjectId id);
+	}
 }
