@@ -21,6 +21,17 @@ namespace UsersAPI.Util
 		}
 
 
+		public static string HashPassword(string password, string salt)
+		{
+			if (password == null)
+			{
+				return "";
+			}
+
+			return Hash(password, salt);
+		}
+
+
 		public static bool Verify(string pass, string compareTo, string salt)
 		{
 			string hash = Hash(pass, salt);

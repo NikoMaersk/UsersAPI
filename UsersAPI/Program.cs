@@ -196,7 +196,7 @@ namespace UsersAPI
 
 				if (!EmailHelper.IsValidEmail(linkedMail) || !EmailHelper.IsValidEmail(email))
 				{
-					return Results.BadRequest("Invalid email");
+					return Results.BadRequest("Must be a valid email");
 				}
 
 				bool isValid = await ur.CheckIfUserExistsAsync(linkedMail) && await ur.CheckIfUserExistsAsync(email);
@@ -216,20 +216,20 @@ namespace UsersAPI
 			{
 				if (!EmailHelper.IsValidEmail(email))
 				{
-					return Results.BadRequest("Invalid email");
+					return Results.BadRequest("Must be a valid email");
 				}
 
 				bool modified = await ur.ClearNamesListAsync(email);
 
 				return modified ? Results.NoContent() : Results.NotFound("List could not be cleared");
-			});
+			}).RequireAuthorization();
 
 
 			app.MapPatch("/users/names/remove/{email}", async (string email, [FromBody] RemoveNamesRequest request, IUserRepository ur) =>
 			{
 				if (!EmailHelper.IsValidEmail(email))
 				{
-					return Results.BadRequest("Invalid email");
+					return Results.BadRequest("Must be a valid email");
 				}
 
 				if (request.Names == null)
@@ -240,8 +240,62 @@ namespace UsersAPI
 				bool modified = await ur.ClearNameFromListAsync(email, request.Names);
 
 				return modified ? Results.NoContent() : Results.NotFound("List could not be cleared");
-			});
+			}).RequireAuthorization();
 
+
+			app.MapPatch("/users/email/{email}", async (string email, JsonElement body, IUserRepository ur) =>
+			{
+				string newEmail = body.GetProperty("email").ToString();
+
+				if (body.ValueKind == JsonValueKind.Undefined || newEmail == null)
+				{
+					return Results.BadRequest("The 'email' property is missing in the request body.");
+				}
+
+				if (!EmailHelper.IsValidEmail(email) || !EmailHelper.IsValidEmail(newEmail))
+				{
+					return Results.BadRequest("Must be a valid email");
+				}
+
+				bool userExists = await ur.CheckIfUserExistsAsync(email);
+
+				if (!userExists)
+				{
+					return Results.BadRequest($"{email} is not a registered user");
+				}
+
+				bool modified = await ur.PatchEmailAsync(email, newEmail);
+
+				return modified ? Results.Ok("Success") : Results.BadRequest("Failed to update");
+
+			}).RequireAuthorization();
+
+
+			app.MapPatch("/users/pass/{email}", async (string email, JsonElement body, IUserRepository ur) =>
+			{
+				string password = body.GetProperty("password").ToString();
+
+				if (body.ValueKind == JsonValueKind.Undefined || password == null)
+				{
+					return Results.BadRequest("no property found in the request body");
+				}
+
+				if (!EmailHelper.IsValidEmail(email))
+				{
+					return Results.BadRequest("Must be a valid email");
+				}
+
+				bool userExists = await ur.CheckIfUserExistsAsync(email);
+
+				if (!userExists)
+				{
+					return Results.BadRequest($"{email} is not a registered user");
+				}
+
+				bool modified = await ur.PatchPasswordAsync(email, password);
+
+				return modified ? Results.Ok("Success") : Results.BadRequest("Failed to update");
+			}).RequireAuthorization();
 
 			#endregion
 

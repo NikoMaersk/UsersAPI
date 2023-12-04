@@ -16,5 +16,7 @@ namespace UsersAPI.Repository.Interfaces
         Task<bool> ClearNameFromListAsync(string email, List<string> namesToRemove);
 		Task<bool> CheckIfUserExistsAsync(string email);
         Task<bool> IsNameStoredAsync(string email, string name);
+		Task<bool> PatchEmailAsync(string oldEmail, string newEmail);
+        Task<bool> PatchPasswordAsync(string email, string password);
 	}
 }

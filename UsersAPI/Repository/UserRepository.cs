@@ -144,5 +144,26 @@ namespace UsersAPI.Repository
 
 			return updateResult?.ModifiedCount > 0;
 		}
+
+		public async Task<bool> PatchEmailAsync(string oldEmail, string newEmail)
+		{
+			var filter = Builders<User>.Filter.Eq(u => u.Email, oldEmail);
+			var update = Builders<User>.Update.Set(u => u.Email, newEmail);
+
+			var updateResult = await _users.UpdateOneAsync(filter, update);
+
+			return updateResult?.ModifiedCount > 0;
+		}
+
+		public async Task<bool> PatchPasswordAsync(string email, string password)
+		{
+			var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+			string hashedPassword = HashingHelper.HashPassword(password, out string salt);
+			var update = Builders<User>.Update.Set(u => u.HashedPassword, hashedPassword).Set(u => u.Salt, salt);
+
+			var updateResult = await _users.UpdateOneAsync(filter, update);
+
+			return updateResult?.ModifiedCount > 0;
+		}
 	}
 }
