@@ -127,7 +127,7 @@ namespace UsersAPI
 					return Results.BadRequest("Must be a email");
 				}
 
-				await ur.AddAsync(request);
+				await ur.AddAsync(request.Name, request.Email, request.Password);
 				return Results.Created();
 			});
 
@@ -356,7 +356,7 @@ namespace UsersAPI
 					return Results.BadRequest("Must be a email");
 				}
 
-				await ar.AddAsync(request);
+				await ar.AddAsync(request.Name, request.Email, request.Password);
 				return Results.Created();
 			});
 

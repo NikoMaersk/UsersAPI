@@ -5,7 +5,7 @@ namespace UsersAPI.Repository.Interfaces
 {
 	public interface IUserRepository : IAuthorize
     {
-        Task AddAsync(RegistrationRequest request);
+        Task AddAsync(string name, string email, string password);
         Task<User> GetAsync(ObjectId id);
         Task<List<User>> GetAllAsync();
         Task DeleteAsync(ObjectId id);
@@ -19,4 +19,4 @@ namespace UsersAPI.Repository.Interfaces
 		Task<bool> PatchEmailAsync(string oldEmail, string newEmail);
         Task<bool> PatchPasswordAsync(string email, string password);
 	}
-}
+}   

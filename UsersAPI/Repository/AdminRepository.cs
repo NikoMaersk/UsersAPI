@@ -18,14 +18,14 @@ namespace UsersAPI.Repository
 			_admins = mongoDatabase.GetCollection<Admin>(mongoDB.Value.AdminCollectionName);
         }
 
-		public async Task AddAsync(RegistrationRequest request)
+		public async Task AddAsync(string name, string email, string password)
 		{
-			string hashedPassword = HashingHelper.HashPassword(request.Password, out string salt);
+			string hashedPassword = HashingHelper.HashPassword(password, out string salt);
 
 			Admin admin = new()
 			{
-				Name = request.Name,
-				Email = request.Email,
+				Name = name,
+				Email = email,
 				HashedPassword = hashedPassword,
 				Salt = salt
 			};

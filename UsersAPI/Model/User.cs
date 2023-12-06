@@ -28,10 +28,10 @@ namespace UsersAPI.Model
 		[BsonElement("salt")]
 		public string Salt { get; set; } = string.Empty;
 
-		public User(RegistrationRequest registrationRequest)
+		public User(string name, string email)
 		{
-			UserName = registrationRequest.Name;
-			Email = registrationRequest.Email;
+			UserName = name;
+			Email = email;
 		}
 
         public User()

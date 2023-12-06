@@ -31,14 +31,14 @@ namespace UsersAPI.Repository
 			_users.Indexes.CreateOne(indexModelEmail);
 		}
 
-		public async Task AddAsync(RegistrationRequest request)
+		public async Task AddAsync(string name, string email, string password)
 		{
-			string hashedPassword = HashingHelper.HashPassword(request.Password, out string salt);
+			string hashedPassword = HashingHelper.HashPassword(password, out string salt);
 
 			User user = new User
 			{
-				UserName = request.Name,
-				Email = request.Email,
+				UserName = name,
+				Email = email,
 				HashedPassword = hashedPassword,
 				Salt = salt,
 				Names = new List<string>()
