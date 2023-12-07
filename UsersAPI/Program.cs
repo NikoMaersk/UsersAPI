@@ -36,6 +36,26 @@ namespace UsersAPI
 				});
 			});
 
+			builder.Services.AddCors(options =>
+			{
+				options.AddPolicy("AllowSpecificOrigin",
+					builder =>
+					{
+						builder
+							.WithOrigins("http://localhost:5173")
+							.AllowAnyHeader()
+							.AllowAnyMethod()
+
+							.AllowCredentials();
+
+					});
+			});
+
+
+
+
+			
+
 			builder.Services.AddAuthorization(builder =>
 			{
 				builder.AddPolicy("admin", pb =>
@@ -65,7 +85,7 @@ namespace UsersAPI
 				app.UseSwaggerUI();
 			}
 
-
+			app.UseCors("AllowSpecificOrigin");
 			app.UseHttpsRedirection();
 			app.UseAuthentication();
 			app.UseAuthorization();
