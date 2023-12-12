@@ -165,5 +165,17 @@ namespace UsersAPI.Repository
 
 			return updateResult?.ModifiedCount > 0;
 		}
-	}
+        public async Task<bool> PatchUserObjectAsync(string email,string emailnew, string name)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Email, email);
+            var update = Builders<User>.Update.Set(u => u.UserName, name);
+
+            var updateResult = await _users.UpdateOneAsync(filter, update);
+            update = Builders<User>.Update.Set(u => u.Email, emailnew);
+            updateResult = await _users.UpdateOneAsync(filter, update);
+
+
+            return updateResult?.ModifiedCount > 0;
+        }
+    }
 }

@@ -316,11 +316,38 @@ namespace UsersAPI
 
 				return modified ? Results.Ok("Success") : Results.BadRequest("Failed to update");
 			}).RequireAuthorization();
+			
+			app.MapPatch("/users/{email}", async(string email, JsonElement body, IUserRepository ur) =>
+            {
+				string name = body.GetProperty("name").ToString();
+				string newemail = body.GetProperty("email").ToString();
 
-			#endregion
+                if (body.ValueKind == JsonValueKind.Undefined)
+                {
+                    return Results.BadRequest("no property found in the request body");
+                }
 
-			#region Names
-			app.MapPost("/names", async (INamesRepository nr, Names name) =>
+                if (!EmailHelper.IsValidEmail(email))
+                {
+                    return Results.BadRequest("Must be a valid email");
+                }
+
+                bool userExists = await ur.CheckIfUserExistsAsync(email);
+
+                if (!userExists)
+                {
+                    return Results.BadRequest($"{email} is not a registered user");
+                }
+
+                bool modified = await ur.PatchUserObjectAsync(email, newemail, name);
+
+                return modified ? Results.Ok("Success") : Results.BadRequest("Failed to update");
+            }).RequireAuthorization();
+
+            #endregion
+
+            #region Names
+            app.MapPost("/names", async (INamesRepository nr, Names name) =>
 			{
 				await nr.AddAsync(name);
 				return Results.Created($"/names/{name.Name}", name);

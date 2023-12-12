@@ -18,5 +18,7 @@ namespace UsersAPI.Repository.Interfaces
         Task<bool> IsNameStoredAsync(string email, string name);
 		Task<bool> PatchEmailAsync(string oldEmail, string newEmail);
         Task<bool> PatchPasswordAsync(string email, string password);
-	}
+        Task<bool> PatchUserObjectAsync(string email, string emailnew, string name);
+
+    }
 }   
