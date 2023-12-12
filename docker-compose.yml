@@ -1,21 +1,30 @@
 ﻿version: '3.1'
-services: 
+services:
   mongohost:
     image: mongo:7
     restart: always
     container_name: mongodb
-    volumes: 
+    volumes:
       - mongohost_db:/data/db
     ports:
-    - 27017:27017
+      - 27017:27017
+
+  mongo_seed:
+    image: mongo:7
+    volumes:
+      - ./mongo-seed:/mongo-seed
+    command: bash -c "/mongo-seed/import.sh && exit 0"
+    depends_on:
+      - mongohost
 
   restapi:
     build: .
     restart: always
     container_name: restapi
     ports:
-     - 5000:5137
+      - 5000:5137
     depends_on:
       - mongohost
+
 volumes:
   mongohost_db:

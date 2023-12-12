@@ -1,0 +1,197 @@
+[
+    {
+        "Name": "Jane Smith",
+        "Email": "jane.smith@example.com",
+        "Password": "securepass456"
+    },
+    {
+        "Name": "Alice Johnson",
+        "Email": "alice.johnson@example.com",
+        "Password": "strongPassword789"
+    },
+    {
+        "Name": "Bob Brown",
+        "Email": "bob.brown@example.com",
+        "Password": "mySecretPass"
+    },
+    {
+        "Name": "Eva White",
+        "Email": "eva.white@example.com",
+        "Password": "pass1234"
+    },
+    {
+        "Name": "Daniel Lee",
+        "Email": "daniel.lee@example.com",
+        "Password": "p@ssw0rd"
+    },
+    {
+        "Name": "Sophia Carter",
+        "Email": "sophia.carter@example.com",
+        "Password": "securePwd567"
+    },
+    {
+        "Name": "Matthew Taylor",
+        "Email": "matthew.taylor@example.com",
+        "Password": "12345678"
+    },
+    {
+        "Name": "Olivia Brown",
+        "Email": "olivia.brown@example.com",
+        "Password": "password!@#"
+    },
+    {
+        "Name": "Liam Wilson",
+        "Email": "liam.wilson@example.com",
+        "Password": "passWord432"
+    },
+    {
+        "Name": "Emma Davis",
+        "Email": "emma.davis@example.com",
+        "Password": "securePass!"
+    },
+    {
+        "Name": "William Garcia",
+        "Email": "william.garcia@example.com",
+        "Password": "P@ssw0rd"
+    },
+    {
+        "Name": "Ava Martinez",
+        "Email": "ava.martinez@example.com",
+        "Password": "aSecurePass123"
+    },
+    {
+        "Name": "Mason Smith",
+        "Email": "mason.smith@example.com",
+        "Password": "pass123!@#"
+    },
+    {
+        "Name": "Sophia Wright",
+        "Email": "sophia.wright@example.com",
+        "Password": "myPwd123"
+    },
+    {
+        "Name": "Ethan Miller",
+        "Email": "ethan.miller@example.com",
+        "Password": "secure123"
+    },
+    {
+        "Name": "Isabella Wilson",
+        "Email": "isabella.wilson@example.com",
+        "Password": "passWord456"
+    },
+    {
+        "Name": "Logan Harris",
+        "Email": "logan.harris@example.com",
+        "Password": "p@ss123"
+    },
+    {
+        "Name": "Aria Thomas",
+        "Email": "aria.thomas@example.com",
+        "Password": "securePwd789"
+    },
+    {
+        "Name": "Jackson Clark",
+        "Email": "jackson.clark@example.com",
+        "Password": "securePassword!"
+    },
+	 {
+        "Name": "Emily Wilson",
+        "Email": "emily.wilson@example.com",
+        "Password": "pass123!@#"
+    },
+    {
+        "Name": "James Anderson",
+        "Email": "james.anderson@example.com",
+        "Password": "securePwd456"
+    },
+    {
+        "Name": "Avery Carter",
+        "Email": "avery.carter@example.com",
+        "Password": "aSecure123"
+    },
+    {
+        "Name": "Benjamin King",
+        "Email": "benjamin.king@example.com",
+        "Password": "mySecret456"
+    },
+    {
+        "Name": "Abigail Moore",
+        "Email": "abigail.moore@example.com",
+        "Password": "securePwd789"
+    },
+    {
+        "Name": "Henry Perez",
+        "Email": "henry.perez@example.com",
+        "Password": "p@ssword123"
+    },
+    {
+        "Name": "Ella Thompson",
+        "Email": "ella.thompson@example.com",
+        "Password": "securePwd!@#"
+    },
+    {
+        "Name": "Carter Hall",
+        "Email": "carter.hall@example.com",
+        "Password": "passWord789"
+    },
+    {
+        "Name": "Scarlett Davis",
+        "Email": "scarlett.davis@example.com",
+        "Password": "secure!@#123"
+    },
+    {
+        "Name": "Grayson Smith",
+        "Email": "grayson.smith@example.com",
+        "Password": "mySecurePwd"
+    },
+    {
+        "Name": "Addison White",
+        "Email": "addison.white@example.com",
+        "Password": "secure123!@#"
+    },
+    {
+        "Name": "Leo Robinson",
+        "Email": "leo.robinson@example.com",
+        "Password": "p@ssword456"
+    },
+    {
+        "Name": "Nora Brown",
+        "Email": "nora.brown@example.com",
+        "Password": "securePwd123"
+    },
+    {
+        "Name": "Gabriel Turner",
+        "Email": "gabriel.turner@example.com",
+        "Password": "aSecurePwd!@#"
+    },
+    {
+        "Name": "Hazel Wilson",
+        "Email": "hazel.wilson@example.com",
+        "Password": "p@ssword789"
+    },
+    {
+        "Name": "Lucas Martinez",
+        "Email": "lucas.martinez@example.com",
+        "Password": "secure789!@#"
+    },
+    {
+        "Name": "Stella Thomas",
+        "Email": "stella.thomas@example.com",
+        "Password": "passWord!@#"
+    },
+    {
+        "Name": "Parker Lee",
+        "Email": "parker.lee@example.com",
+        "Password": "securePwd456"
+    },
+    {
+        "Name": "Violet Harris",
+        "Email": "violet.harris@example.com",
+        "Password": "mySecure789"
+    },
+    {
+        "Name": "Jack Turner",
+        "Email": "jack.turner@example.com",
+        "Password": "secure!@#456"
+    }
+]
