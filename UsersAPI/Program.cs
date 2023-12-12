@@ -316,7 +316,7 @@ namespace UsersAPI
 
 				return modified ? Results.Ok("Success") : Results.BadRequest("Failed to update");
 			}).RequireAuthorization();
-			
+			// NEW please check
 			app.MapPatch("/users/{email}", async(string email, JsonElement body, IUserRepository ur) =>
             {
 				string name = body.GetProperty("name").ToString();
