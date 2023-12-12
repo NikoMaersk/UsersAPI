@@ -12,8 +12,9 @@ services:
   mongo_seed:
     image: mongo:7
     volumes:
-      - ./mongo-seed:/mongo-seed
-    command: bash -c "/mongo-seed/import.sh && exit 0"
+      - ./seed_data:/seed_data
+    command: bash -c "/seed_data/import.sh > /seed_data/import.log 2>&1 && exit 0"
+
     depends_on:
       - mongohost
 

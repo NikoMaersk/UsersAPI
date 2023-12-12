@@ -36,6 +36,17 @@ namespace UsersAPI
 				});
 			});
 
+			builder.Services.AddAuthorization(builder =>
+			{
+				builder.AddPolicy("admin", pb =>
+				{
+					pb.RequireAuthenticatedUser()
+					.AddAuthenticationSchemes(authScheme)
+					.AddRequirements()
+					.RequireClaim("user_type", "admin");
+				});
+			});
+
 			builder.Services.AddCors(options =>
 			{
 				options.AddPolicy("AllowSpecificOrigin",
@@ -49,22 +60,6 @@ namespace UsersAPI
 							.AllowCredentials();
 
 					});
-			});
-
-
-
-
-			
-
-			builder.Services.AddAuthorization(builder =>
-			{
-				builder.AddPolicy("admin", pb =>
-				{
-					pb.RequireAuthenticatedUser()
-					.AddAuthenticationSchemes(authScheme)
-					.AddRequirements()
-					.RequireClaim("user_type", "admin");
-				});
 			});
 
 			// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -96,7 +91,6 @@ namespace UsersAPI
 		}
 
 		
-
 		private static void ConfigureRoutes(WebApplication app)
 		{
 			#region Login
