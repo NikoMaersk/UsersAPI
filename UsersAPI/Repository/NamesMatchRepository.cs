@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Xml.Linq;
 using UsersAPI.Model;
 using UsersAPI.Repository.Interfaces;
 
